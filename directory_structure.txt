@@ -1,52 +1,56 @@
-./
-  print_structure.py
-  README.md
-  backend/
-    .env
-    main.py
-    steadfast-icon-393108-413b0d586b9f.json
-    supabase_client.py
-    test.py
-  frontend/
-    .env.local
-    .gitignore
-    eslint.config.mjs
-    next-env.d.ts
-    next.config.ts
-    package-lock.json
-    package.json
-    postcss.config.mjs
-    README.md
-    tsconfig.json
-    app/
-      globals.css
-      layout.tsx
-      page.tsx
-      auth/
-        login/
-          page.tsx
-        register/
-          page.tsx
-      projects/
-        page.tsx
-      tasks/
-        page.tsx
-      tools/
-        page.tsx
-      users/
-        page.tsx
-    components/
-      card.tsx
-      navbar.tsx
-      sidebar.tsx
-    public/
-      file.svg
-      globe.svg
-      next.svg
-      vercel.svg
-      window.svg
-    src/
-      app/
-        favicon.ico
-        layout.tsx
-        page.tsx
+.
+├── README.md
+├── backend
+│   ├── .env
+│   ├── main.py
+│   ├── steadfast-icon-393108-413b0d586b9f.json
+│   ├── supabase_client.py
+│   └── test.py
+├── directory_structure.txt
+├── frontend
+│   ├── .env.local
+│   ├── .gitignore
+│   ├── README.md
+│   ├── app
+│   │   ├── auth
+│   │   │   ├── login
+│   │   │   │   └── page.tsx
+│   │   │   ├── logout
+│   │   │   │   └── page.tsx
+│   │   │   └── register
+│   │   │       └── page.tsx
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── projects
+│   │   │   └── page.tsx
+│   │   ├── tasks
+│   │   │   └── page.tsx
+│   │   ├── tools
+│   │   │   └── page.tsx
+│   │   └── users
+│   │       └── page.tsx
+│   ├── components
+│   │   ├── AuthGuard.tsx
+│   │   ├── card.tsx
+│   │   ├── navbar.tsx
+│   │   └── sidebar.tsx
+│   ├── eslint.config.mjs
+│   ├── next-env.d.ts
+│   ├── next.config.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   ├── public
+│   │   ├── file.svg
+│   │   ├── globe.svg
+│   │   ├── next.svg
+│   │   ├── vercel.svg
+│   │   └── window.svg
+│   ├── src
+│   │   └── app
+│   │       ├── favicon.ico
+│   │       ├── layout.tsx
+│   │       └── page.tsx
+│   └── tsconfig.json
+└── print_structure.py

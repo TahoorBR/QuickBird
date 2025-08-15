@@ -37,12 +37,16 @@ const Sidebar = () => {
       <List>
         {menuItems.map((item) => (
           <ListItem
-            button
-            key={item.text}
-            onClick={() => router.push(item.path)}
-          >
-            <ListItemIcon sx={{ color: "#fff" }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
+                key={item.text}
+                component="button"
+                onClick={() => router.push(item.path)}
+                sx={{
+                    textAlign: "left",
+                    "&:hover": { backgroundColor: "rgba(255,255,255,0.08)" },
+                }}
+                >
+                <ListItemIcon sx={{ color: "#fff" }}>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
           </ListItem>
         ))}
       </List>
