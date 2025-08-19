@@ -33,11 +33,12 @@ const LoginPage = () => {
         if (!isValid) {
           setMessage("Incorrect password");
         } else {
+          // ✅ Login successful, set session flag
+          localStorage.setItem("authUser", JSON.stringify({ email: data.email }));
           setMessage("Login successful!");
-          // Redirect to dashboard after 1 second
-          setTimeout(() => {
-            router.push("/dashboard");
-          }, 1000);
+
+          // Redirect immediately
+          router.push("/dashboard");
         }
       }
     } catch (err: any) {
@@ -45,6 +46,7 @@ const LoginPage = () => {
     }
     setLoading(false);
   };
+
 
   return (
     <Box
@@ -128,7 +130,7 @@ const LoginPage = () => {
           type="password"
           fullWidth
           sx={{
-            mb: 4,
+            mb: 1, // smaller margin now
             input: { color: "#fff", WebkitBoxShadow: "0 0 0 1000px #111 inset" },
             label: { color: "#ccc" },
             "& .MuiOutlinedInput-root": {
@@ -143,6 +145,22 @@ const LoginPage = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        <Typography
+          sx={{
+            mt: 0.5,
+            mb: 3,
+            color: sage,
+            textDecoration: "underline",
+            fontSize: 14,
+            cursor: "pointer",
+            textAlign: "right",
+          }}
+          onClick={() => router.push("/auth/forgot")} // your forgot password page
+        >
+          Forgot password?
+        </Typography>
+
 
         <Button
           variant="contained"

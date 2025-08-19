@@ -1,10 +1,10 @@
 "use client";
 
 import DashboardLayout from "../../components/DashboardLayout";
+import AuthGuard from "../../components/AuthGuard"; // import AuthGuard
 import {
   Typography,
   Box,
-  Paper,
   Button,
   List,
   ListItem,
@@ -14,11 +14,13 @@ import {
 import FolderIcon from "@mui/icons-material/Folder";
 import TaskIcon from "@mui/icons-material/Task";
 import BuildIcon from "@mui/icons-material/Build";
-import PeopleIcon from "@mui/icons-material/People";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { useRouter } from "next/navigation";
 
-const DashboardPage = () => {
+const DashboardPageContent = () => {
   const sage = "#889977"; // dark olive/sage
+  const router = useRouter();
 
   const cards = [
     {
@@ -37,9 +39,10 @@ const DashboardPage = () => {
       icon: <BuildIcon sx={{ fontSize: 40, color: sage }} />,
     },
     {
-      title: "Users",
-      desc: "Manage clients and team",
-      icon: <PeopleIcon sx={{ fontSize: 40, color: sage }} />,
+      title: "Profile",
+      desc: "Update your account settings",
+      icon: <AccountCircleIcon sx={{ fontSize: 40, color: sage }} />,
+      route: "/dashboard/profile",
     },
   ];
 
@@ -102,6 +105,7 @@ const DashboardPage = () => {
                 boxShadow: `0 12px 40px rgba(136,153,119,0.7)`,
               },
             }}
+            onClick={() => card.route && router.push(card.route)}
           >
             {card.icon}
             <Typography variant="h6" sx={{ color: "#fff", mt: 2, mb: 1 }}>
@@ -168,36 +172,27 @@ const DashboardPage = () => {
           <Typography variant="h6" sx={{ color: "#fff", mb: 2 }}>
             Quick Actions
           </Typography>
-          <Button
-            sx={{
-              backgroundColor: sage,
-              color: "#000",
-              "&:hover": { backgroundColor: "#778866" },
-            }}
-          >
+          <Button sx={{ backgroundColor: sage, color: "#000", "&:hover": { backgroundColor: "#778866" } }}>
             Create Project
           </Button>
-          <Button
-            sx={{
-              backgroundColor: sage,
-              color: "#000",
-              "&:hover": { backgroundColor: "#778866" },
-            }}
-          >
+          <Button sx={{ backgroundColor: sage, color: "#000", "&:hover": { backgroundColor: "#778866" } }}>
             Add Task
           </Button>
-          <Button
-            sx={{
-              backgroundColor: sage,
-              color: "#000",
-              "&:hover": { backgroundColor: "#778866" },
-            }}
-          >
+          <Button sx={{ backgroundColor: sage, color: "#000", "&:hover": { backgroundColor: "#778866" } }}>
             Invite User
           </Button>
         </Box>
       </Box>
     </DashboardLayout>
+  );
+};
+
+// Wrap dashboard page in AuthGuard
+const DashboardPage = () => {
+  return (
+    <AuthGuard>
+      <DashboardPageContent />
+    </AuthGuard>
   );
 };
 
