@@ -46,32 +46,8 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme as useCustomTheme } from "@/contexts/ThemeContext";
 import { useState, useEffect } from "react";
-import { apiClient } from "@/lib/api";
+import { apiClient, Invoice, InvoiceItem } from "@/lib/api";
 import toast from "react-hot-toast";
-
-interface Invoice {
-  id: number;
-  invoice_number: string;
-  client_name: string;
-  client_email: string;
-  project_title: string;
-  amount: number;
-  tax_rate: number;
-  tax_amount: number;
-  total_amount: number;
-  status: 'draft' | 'sent' | 'paid' | 'overdue';
-  due_date: string;
-  created_at: string;
-  items: InvoiceItem[];
-}
-
-interface InvoiceItem {
-  id: number;
-  description: string;
-  quantity: number;
-  rate: number;
-  amount: number;
-}
 
 const InvoiceCard = ({ invoice, onEdit, onDelete, onPrint, onSend }: { 
   invoice: Invoice; 
@@ -129,7 +105,7 @@ const InvoiceCard = ({ invoice, onEdit, onDelete, onPrint, onSend }: {
             </Typography>
             <Typography variant="body2" color="text.secondary">
               <CalendarToday sx={{ fontSize: 16, mr: 0.5, verticalAlign: 'middle' }} />
-              Due: {new Date(invoice.due_date).toLocaleDateString()}
+              Due: {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : 'No due date'}
             </Typography>
           </Box>
         }
@@ -156,7 +132,7 @@ const InvoiceCard = ({ invoice, onEdit, onDelete, onPrint, onSend }: {
             ${invoice.total_amount.toFixed(2)}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {invoice.items.length} items
+            {invoice.items?.length || 0} items
           </Typography>
         </Box>
         
@@ -164,7 +140,7 @@ const InvoiceCard = ({ invoice, onEdit, onDelete, onPrint, onSend }: {
         
         <Box sx={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
           <Typography color="text.secondary">Subtotal:</Typography>
-          <Typography>${invoice.amount.toFixed(2)}</Typography>
+          <Typography>${invoice.subtotal.toFixed(2)}</Typography>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
           <Typography color="text.secondary">Tax ({invoice.tax_rate}%):</Typography>
@@ -483,8 +459,11 @@ const CreateInvoiceDialog = ({
     
     onSubmit({
       ...formData,
+      subtotal: formData.amount,
       tax_amount,
       total_amount,
+      currency: 'PKR',
+      is_recurring: false,
       status: 'draft',
       items: []
     });
@@ -541,6 +520,7 @@ const CreateInvoiceDialog = ({
                   {project.title} - {project.client_name}
                 </MenuItem>
               ))}
+              <MenuItem value="other">Other</MenuItem>
             </Select>
           </FormControl>
           
@@ -659,7 +639,7 @@ const PrintInvoiceDialog = ({
             </Box>
             <Box sx={{ textAlign: "right" }}>
               <Typography variant="body2" color="text.secondary">
-                Due Date: {new Date(invoice.due_date).toLocaleDateString()}
+                Due Date: {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : 'No due date'}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Project: {invoice.project_title}
@@ -679,7 +659,7 @@ const PrintInvoiceDialog = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {invoice.items.map((item) => (
+                {invoice.items?.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.description}</TableCell>
                     <TableCell align="right">{item.quantity}</TableCell>
@@ -696,7 +676,7 @@ const PrintInvoiceDialog = ({
             <Box sx={{ minWidth: 200 }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                 <Typography>Subtotal:</Typography>
-                <Typography>${invoice.amount.toFixed(2)}</Typography>
+                <Typography>${invoice.subtotal.toFixed(2)}</Typography>
               </Box>
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                 <Typography>Tax ({invoice.tax_rate}%):</Typography>

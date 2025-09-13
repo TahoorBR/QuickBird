@@ -25,3 +25,4 @@ class Client(Base):
     # Relationships
     user = relationship("User", back_populates="clients")
     projects = relationship("Project", back_populates="client")
+    recurring_invoices = relationship("RecurringInvoice", back_populates="client")

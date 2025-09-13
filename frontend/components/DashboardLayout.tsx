@@ -21,7 +21,8 @@ import {
   useTheme,
   alpha,
   Badge,
-  Tooltip
+  Tooltip,
+  Button
 } from "@mui/material";
 import { 
   Dashboard as DashboardIcon,
@@ -39,7 +40,8 @@ import {
   LightMode,
   DarkMode,
   Home,
-  ChevronRight
+  ChevronRight,
+  Analytics
 } from "@mui/icons-material";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme as useCustomTheme } from "@/contexts/ThemeContext";
@@ -49,6 +51,7 @@ import { usePathname } from "next/navigation";
 import { apiClient } from "@/lib/api";
 
 const drawerWidth = 280;
+const collapsedDrawerWidth = 80;
 
 const getNavigationItems = (counts: any) => [
   {
@@ -77,15 +80,15 @@ const getNavigationItems = (counts: any) => [
   },
   {
     title: "AI Tools",
-    href: "/dashboard/tools",
+    href: "/dashboard/ai-tools",
     icon: Psychology,
     badge: null
   },
   {
-    title: "Notifications",
-    href: "/dashboard/notifications",
-    icon: Notifications,
-    badge: counts.notifications || 0
+    title: "Analytics",
+    href: "/dashboard/analytics",
+    icon: Analytics,
+    badge: null
   },
   {
     title: "Invoices",
@@ -135,7 +138,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { mode, toggleMode } = useCustomTheme();
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
   const [counts, setCounts] = useState({ projects: 0, tasks: 0, clients: 0, invoices: 0, milestones: 0, notifications: 0 });
   const pathname = usePathname();
 
@@ -181,12 +186,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setMobileOpen(!mobileOpen);
   };
 
+  const handleSidebarToggle = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleProfileMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleNotificationMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setNotificationAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationMenuClose = () => {
+    setNotificationAnchorEl(null);
   };
 
   const handleLogout = async () => {
@@ -228,11 +245,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Logo */}
       <Box
         sx={{
-          p: 3,
+          p: sidebarCollapsed ? 2 : 3,
           borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: sidebarCollapsed ? 0 : 2 }}>
           <Box
             sx={{
               width: 40,
@@ -248,72 +265,100 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               QB
             </Typography>
           </Box>
-          <Box>
-            <Typography variant="h6" fontWeight="bold">
-              QuickBird
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Professional Suite
-            </Typography>
-          </Box>
+          {!sidebarCollapsed && (
+            <Box>
+              <Typography variant="h6" fontWeight="bold">
+                QuickBird
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Professional Suite
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Box>
 
       {/* Navigation */}
       <Box sx={{ flex: 1, overflow: "auto" }}>
-        <List sx={{ px: 2, py: 1 }}>
+        <List sx={{ px: sidebarCollapsed ? 1 : 2, py: 1 }}>
           {getNavigationItems(counts).map((item) => {
             const isActive = pathname === item.href;
             return (
               <ListItem key={item.title} disablePadding sx={{ mb: 0.5 }}>
-                <ListItemButton
-                  component={Link}
-                  href={item.href}
-                  sx={{
-                    borderRadius: 2,
-                    mb: 0.5,
-                    backgroundColor: isActive 
-                      ? alpha(theme.palette.primary.main, 0.1)
-                      : "transparent",
-                    border: isActive 
-                      ? `1px solid ${alpha(theme.palette.primary.main, 0.2)}`
-                      : "1px solid transparent",
-                    "&:hover": {
-                      backgroundColor: alpha(theme.palette.primary.main, 0.05),
-                    },
-                  }}
-                >
-                  <ListItemIcon
+                <Tooltip title={sidebarCollapsed ? item.title : ""} placement="right">
+                  <ListItemButton
+                    component={Link}
+                    href={item.href}
                     sx={{
-                      color: isActive ? theme.palette.primary.main : "text.secondary",
-                      minWidth: 40,
-                    }}
-                  >
-                    <item.icon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.title}
-                    sx={{
-                      "& .MuiListItemText-primary": {
-                        fontWeight: isActive ? 600 : 400,
-                        color: isActive ? theme.palette.primary.main : "text.primary",
+                      borderRadius: 2,
+                      mb: 0.5,
+                      px: sidebarCollapsed ? 1.5 : 2,
+                      justifyContent: sidebarCollapsed ? "center" : "flex-start",
+                      backgroundColor: isActive 
+                        ? alpha(theme.palette.primary.main, 0.1)
+                        : "transparent",
+                      border: isActive 
+                        ? `1px solid ${alpha(theme.palette.primary.main, 0.2)}`
+                        : "1px solid transparent",
+                      "&:hover": {
+                        backgroundColor: alpha(theme.palette.primary.main, 0.05),
                       },
                     }}
-                  />
-                  {item.badge && (
-                    <Badge
-                      badgeContent={item.badge}
-                      color="primary"
+                  >
+                    <ListItemIcon
                       sx={{
-                        "& .MuiBadge-badge": {
-                          fontSize: "0.75rem",
-                          height: 20,
-                          minWidth: 20,
-                        },
+                        color: isActive ? theme.palette.primary.main : "text.secondary",
+                        minWidth: sidebarCollapsed ? "auto" : 40,
+                        justifyContent: "center",
                       }}
-                    />
-                  )}
-                </ListItemButton>
+                    >
+                      {item.badge && !sidebarCollapsed ? (
+                        <Badge
+                          badgeContent={item.badge}
+                          color="primary"
+                          sx={{
+                            "& .MuiBadge-badge": {
+                              fontSize: "0.75rem",
+                              height: 20,
+                              minWidth: 20,
+                            },
+                          }}
+                        >
+                          <item.icon />
+                        </Badge>
+                      ) : (
+                        <item.icon />
+                      )}
+                    </ListItemIcon>
+                    {!sidebarCollapsed && (
+                      <ListItemText
+                        primary={item.title}
+                        sx={{
+                          "& .MuiListItemText-primary": {
+                            fontWeight: isActive ? 600 : 400,
+                            color: isActive ? theme.palette.primary.main : "text.primary",
+                          },
+                        }}
+                      />
+                    )}
+                    {item.badge && sidebarCollapsed && (
+                      <Badge
+                        badgeContent={item.badge}
+                        color="primary"
+                        sx={{
+                          position: "absolute",
+                          top: 8,
+                          right: 8,
+                          "& .MuiBadge-badge": {
+                            fontSize: "0.75rem",
+                            height: 16,
+                            minWidth: 16,
+                          },
+                        }}
+                      />
+                    )}
+                  </ListItemButton>
+                </Tooltip>
               </ListItem>
             );
           })}
@@ -323,7 +368,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* User Profile */}
       <Box
         sx={{
-          p: 2,
+          p: sidebarCollapsed ? 1 : 2,
           borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
         }}
       >
@@ -331,11 +376,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 2,
-            p: 2,
+            gap: sidebarCollapsed ? 0 : 2,
+            p: sidebarCollapsed ? 1 : 2,
             borderRadius: 2,
             backgroundColor: alpha(theme.palette.background.paper, 0.5),
             cursor: "pointer",
+            justifyContent: sidebarCollapsed ? "center" : "flex-start",
           }}
           onClick={handleProfileMenuOpen}
         >
@@ -348,14 +394,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           >
             {user?.username?.charAt(0).toUpperCase()}
           </Avatar>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="subtitle2" fontWeight="600" noWrap>
-              {user?.username || "User"}
-            </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap>
-              {user?.email || "user@example.com"}
-            </Typography>
-          </Box>
+          {!sidebarCollapsed && (
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="subtitle2" fontWeight="600" noWrap>
+                {user?.username || "User"}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" noWrap>
+                {user?.email || "user@example.com"}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+        
+        {/* Toggle Button */}
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+          <IconButton
+            onClick={handleSidebarToggle}
+            size="small"
+            sx={{
+              color: theme.palette.text.secondary,
+              '&:hover': {
+                backgroundColor: alpha(theme.palette.primary.main, 0.1)
+              }
+            }}
+          >
+            <MenuIcon sx={{ transform: sidebarCollapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.3s' }} />
+          </IconButton>
         </Box>
       </Box>
     </Box>
@@ -367,12 +431,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <AppBar
         position="fixed"
         sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
+          width: { sm: `calc(100% - ${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px)` },
+          ml: { sm: `${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px` },
           backgroundColor: alpha(theme.palette.background.paper, 0.9),
           backdropFilter: "blur(10px)",
           borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
           boxShadow: "none",
+          transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
         }}
       >
         <Toolbar>
@@ -407,14 +475,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {/* Right side actions */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Tooltip title="Toggle theme">
-              <IconButton onClick={toggleMode} color="inherit">
+              <IconButton 
+                onClick={toggleMode} 
+                sx={{ 
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1)
+                  }
+                }}
+              >
                 {mode === 'dark' ? <LightMode /> : <DarkMode />}
               </IconButton>
             </Tooltip>
 
             <Tooltip title="Notifications">
-              <IconButton color="inherit">
-                <Badge badgeContent={4} color="error">
+              <IconButton 
+                onClick={handleNotificationMenuOpen}
+                sx={{ 
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1)
+                  }
+                }}
+              >
+                <Badge badgeContent={counts.notifications} color="error">
                   <Notifications />
                 </Badge>
               </IconButton>
@@ -423,7 +507,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Tooltip title="Profile">
               <IconButton
                 onClick={handleProfileMenuOpen}
-                color="inherit"
+                sx={{ 
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1)
+                  }
+                }}
               >
                 <AccountCircle />
               </IconButton>
@@ -431,6 +520,56 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Notification Menu */}
+      <Menu
+        anchorEl={notificationAnchorEl}
+        open={Boolean(notificationAnchorEl)}
+        onClose={handleNotificationMenuClose}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        PaperProps={{
+          sx: {
+            width: 320,
+            maxHeight: 400,
+            overflow: 'auto'
+          }
+        }}
+      >
+        <Box sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
+          <Typography variant="h6" fontWeight="600">
+            Notifications
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {counts.notifications} unread notifications
+          </Typography>
+        </Box>
+        
+        {counts.notifications > 0 ? (
+          <Box sx={{ p: 2 }}>
+            <Typography variant="body2" color="text.secondary" textAlign="center">
+              You have {counts.notifications} unread notifications
+            </Typography>
+            <Button 
+              fullWidth 
+              variant="outlined" 
+              sx={{ mt: 2 }}
+              component={Link}
+              href="/dashboard/notifications"
+              onClick={handleNotificationMenuClose}
+            >
+              View All Notifications
+            </Button>
+          </Box>
+        ) : (
+          <Box sx={{ p: 4, textAlign: 'center' }}>
+            <Notifications sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+            <Typography variant="body2" color="text.secondary">
+              No new notifications
+            </Typography>
+          </Box>
+        )}
+      </Menu>
 
       {/* Profile Menu */}
       <Menu
@@ -464,7 +603,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Drawer */}
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{ 
+          width: { sm: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth }, 
+          flexShrink: { sm: 0 },
+          transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+        }}
       >
         <Drawer
           variant="temporary"
@@ -491,10 +637,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             display: { xs: "none", sm: "block" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: drawerWidth,
+              width: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth,
               backgroundColor: alpha(theme.palette.background.paper, 0.95),
               backdropFilter: "blur(10px)",
               borderRight: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              transition: theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+              }),
             },
           }}
           open
@@ -508,11 +658,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         component="main"
         sx={{
           flexGrow: 1,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          width: { sm: `calc(100% - ${sidebarCollapsed ? collapsedDrawerWidth : drawerWidth}px)` },
           minHeight: "100vh",
           backgroundColor: mode === 'dark' 
             ? "linear-gradient(135deg, #0f0f12 0%, #1a1a1f 100%)"
             : "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+          transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
         }}
       >
         <Toolbar />

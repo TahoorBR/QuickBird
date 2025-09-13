@@ -2,23 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Foreign
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from ..core.database import Base
-import enum
-
-class NotificationType(str, enum.Enum):
-    TASK_DUE = "task_due"
-    TASK_COMPLETED = "task_completed"
-    PROJECT_DEADLINE = "project_deadline"
-    MILESTONE_COMPLETED = "milestone_completed"
-    INVOICE_OVERDUE = "invoice_overdue"
-    PAYMENT_RECEIVED = "payment_received"
-    SYSTEM_UPDATE = "system_update"
-    GENERAL = "general"
-
-class NotificationPriority(str, enum.Enum):
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    URGENT = "urgent"
+from ..schemas.notification import NotificationType, NotificationPriority
 
 class Notification(Base):
     __tablename__ = "notifications"

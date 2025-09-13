@@ -6,6 +6,7 @@ from .invoice import Invoice, InvoiceItem
 from .milestone import Milestone
 from .work_log import WorkLog
 from .notification import Notification
+from .recurring_invoice import RecurringInvoice
 
 # Import all models to ensure they are registered with SQLAlchemy
-__all__ = ["User", "Project", "Task", "Client", "Invoice", "InvoiceItem", "Milestone", "WorkLog", "Notification"]
+__all__ = ["User", "Project", "Task", "Client", "Invoice", "InvoiceItem", "Milestone", "WorkLog", "Notification", "RecurringInvoice"]

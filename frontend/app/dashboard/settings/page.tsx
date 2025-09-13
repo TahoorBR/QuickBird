@@ -31,7 +31,7 @@ import {
   Security,
   Palette,
   Language,
-  Currency,
+  AttachMoney as Currency,
   Save,
   Delete,
   Edit,
@@ -170,9 +170,13 @@ export default function SettingsPage() {
         </Typography>
       </Box>
 
-      <Grid container spacing={3}>
+      <Box sx={{ 
+        display: "grid", 
+        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", 
+        gap: 3 
+      }}>
         {/* Theme Settings */}
-        <Grid item xs={12} md={6}>
+        <Box>
           <Card>
             <CardHeader
               title="Appearance"
@@ -207,15 +211,16 @@ export default function SettingsPage() {
                     <MenuItem value="ur">اردو</MenuItem>
                     <MenuItem value="es">Español</MenuItem>
                     <MenuItem value="fr">Français</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
         {/* Currency Settings */}
-        <Grid item xs={12} md={6}>
+        <Box>
           <Card>
             <CardHeader
               title="Currency & Region"
@@ -235,6 +240,7 @@ export default function SettingsPage() {
                   <MenuItem value="GBP">GBP - British Pound</MenuItem>
                   <MenuItem value="CAD">CAD - Canadian Dollar</MenuItem>
                   <MenuItem value="AUD">AUD - Australian Dollar</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
                 </Select>
               </FormControl>
               
@@ -250,14 +256,15 @@ export default function SettingsPage() {
                   <MenuItem value="America/New_York">America/New_York (EST)</MenuItem>
                   <MenuItem value="Europe/London">Europe/London (GMT)</MenuItem>
                   <MenuItem value="Asia/Tokyo">Asia/Tokyo (JST)</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
                 </Select>
               </FormControl>
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
         {/* Notification Settings */}
-        <Grid item xs={12} md={6}>
+        <Box>
           <Card>
             <CardHeader
               title="Notifications"
@@ -315,10 +322,10 @@ export default function SettingsPage() {
               />
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
         {/* AI Settings */}
-        <Grid item xs={12} md={6}>
+        <Box>
           <Card>
             <CardHeader
               title="AI Features"
@@ -356,18 +363,22 @@ export default function SettingsPage() {
               />
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
         {/* Privacy Settings */}
-        <Grid item xs={12}>
+        <Box>
           <Card>
             <CardHeader
               title="Privacy & Security"
               avatar={<Security />}
             />
             <CardContent>
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+              <Box sx={{ 
+        display: "grid", 
+        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", 
+        gap: 3 
+      }}>
+                <Box>
                   <FormControl fullWidth>
                     <InputLabel>Profile Visibility</InputLabel>
                     <Select
@@ -378,11 +389,12 @@ export default function SettingsPage() {
                       <MenuItem value="private">Private</MenuItem>
                       <MenuItem value="public">Public</MenuItem>
                       <MenuItem value="contacts">Contacts Only</MenuItem>
+                      <MenuItem value="other">Other</MenuItem>
                     </Select>
                   </FormControl>
-                </Grid>
+                </Box>
                 
-                <Grid item xs={12} md={6}>
+                <Box>
                   <FormControlLabel
                     control={
                       <Switch
@@ -392,14 +404,14 @@ export default function SettingsPage() {
                     }
                     label="Allow Data Sharing for Analytics"
                   />
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
 
         {/* Action Buttons */}
-        <Grid item xs={12}>
+        <Box>
           <Card>
             <CardContent>
               <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
@@ -421,8 +433,8 @@ export default function SettingsPage() {
               </Box>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+              </Box>
     </Container>
   );
 }

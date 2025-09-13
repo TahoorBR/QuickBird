@@ -743,6 +743,7 @@ const CreateProjectDialog = ({
               <MenuItem value="active">Active</MenuItem>
               <MenuItem value="paused">Paused</MenuItem>
               <MenuItem value="completed">Completed</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
             </Select>
           </FormControl>
         </DialogContent>
@@ -835,6 +836,7 @@ const EditProjectDialog = ({
               <MenuItem value="active">Active</MenuItem>
               <MenuItem value="completed">Completed</MenuItem>
               <MenuItem value="paused">Paused</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
             </Select>
           </FormControl>
           

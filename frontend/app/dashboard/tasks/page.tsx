@@ -636,6 +636,7 @@ export default function TasksPage() {
                     <MenuItem value="All">All Tasks</MenuItem>
                     <MenuItem value="Pending">Pending</MenuItem>
                     <MenuItem value="Completed">Completed</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -651,6 +652,7 @@ export default function TasksPage() {
                     <MenuItem value="High">High</MenuItem>
                     <MenuItem value="Medium">Medium</MenuItem>
                     <MenuItem value="Low">Low</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -930,6 +932,7 @@ const CreateTaskDialog = ({
                 <MenuItem value="pending">Pending</MenuItem>
                 <MenuItem value="in_progress">In Progress</MenuItem>
                 <MenuItem value="completed">Completed</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
               </Select>
             </FormControl>
             
@@ -943,6 +946,7 @@ const CreateTaskDialog = ({
                 <MenuItem value="low">Low</MenuItem>
                 <MenuItem value="medium">Medium</MenuItem>
                 <MenuItem value="high">High</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -1251,6 +1255,7 @@ const EditTaskDialog = ({
                 <MenuItem value="pending">Pending</MenuItem>
                 <MenuItem value="in_progress">In Progress</MenuItem>
                 <MenuItem value="completed">Completed</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
               </Select>
             </FormControl>
             
@@ -1264,6 +1269,7 @@ const EditTaskDialog = ({
                 <MenuItem value="low">Low</MenuItem>
                 <MenuItem value="medium">Medium</MenuItem>
                 <MenuItem value="high">High</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
               </Select>
             </FormControl>
           </Box>

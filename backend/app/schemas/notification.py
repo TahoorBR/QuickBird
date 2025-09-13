@@ -1,7 +1,23 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
-from .notification import NotificationType, NotificationPriority
+from enum import Enum
+
+class NotificationType(str, Enum):
+    GENERAL = "general"
+    TASK_DUE = "task_due"
+    TASK_COMPLETED = "task_completed"
+    PROJECT_DEADLINE = "project_deadline"
+    MILESTONE_COMPLETED = "milestone_completed"
+    INVOICE_OVERDUE = "invoice_overdue"
+    PAYMENT_RECEIVED = "payment_received"
+    SYSTEM_UPDATE = "system_update"
+
+class NotificationPriority(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    URGENT = "urgent"
 
 class NotificationBase(BaseModel):
     title: str

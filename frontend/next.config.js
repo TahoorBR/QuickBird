@@ -12,7 +12,15 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   },
   images: {
-    domains: ['localhost', '127.0.0.1'],
+    domains: ['localhost', '127.0.0.1', 'quickbird-backend.onrender.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'quickbird-backend.onrender.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
   experimental: {
     serverComponentsExternalPackages: ['@radix-ui/react-icons']

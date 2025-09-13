@@ -32,6 +32,7 @@ class Project(Base):
     client = relationship("Client", back_populates="projects")
     milestones = relationship("Milestone", back_populates="project", cascade="all, delete-orphan")
     work_logs = relationship("WorkLog", back_populates="project")
+    recurring_invoices = relationship("RecurringInvoice", back_populates="project")
 
     def __repr__(self):
         return f"<Project(id={self.id}, title={self.title}, status={self.status})>"

@@ -47,36 +47,8 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme as useCustomTheme } from "@/contexts/ThemeContext";
 import { useState, useEffect } from "react";
-import { apiClient, Project } from "@/lib/api";
+import { apiClient, Project, Milestone } from "@/lib/api";
 import toast from "react-hot-toast";
-
-interface Milestone {
-  id: number;
-  title: string;
-  description?: string;
-  project_id: number;
-  project_title: string;
-  status: 'not_started' | 'in_progress' | 'completed' | 'paused';
-  priority: 'low' | 'medium' | 'high';
-  due_date?: string;
-  completed_date?: string;
-  progress: number; // 0-100
-  created_at: string;
-  updated_at: string;
-  tasks?: Task[];
-}
-
-interface Task {
-  id: number;
-  title: string;
-  description?: string;
-  status: 'pending' | 'in_progress' | 'completed';
-  priority: 'low' | 'medium' | 'high';
-  milestone_id: number;
-  due_date?: string;
-  created_at: string;
-  updated_at: string;
-}
 
 const MilestoneCard = ({ milestone, onEdit, onDelete, onToggleStatus }: { 
   milestone: Milestone; 
@@ -153,7 +125,7 @@ const MilestoneCard = ({ milestone, onEdit, onDelete, onToggleStatus }: {
           <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
             <Typography variant="body2" color="text.secondary">
               <Work sx={{ fontSize: 16, mr: 0.5, verticalAlign: 'middle' }} />
-              {milestone.project_title}
+              Project ID: {milestone.project_id}
             </Typography>
             {milestone.due_date && (
               <Typography variant="body2" color="text.secondary">
@@ -466,6 +438,8 @@ export default function MilestonesPage() {
                 <MenuItem value="in_progress">In Progress</MenuItem>
                 <MenuItem value="completed">Completed</MenuItem>
                 <MenuItem value="paused">Paused</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
               </Select>
             </FormControl>
             <FormControl size="small" sx={{ minWidth: 150 }}>
@@ -480,6 +454,7 @@ export default function MilestonesPage() {
                     {project.title}
                   </MenuItem>
                 ))}
+                <MenuItem value="other">Other</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -599,7 +574,8 @@ const CreateMilestoneDialog = ({
     onSubmit({
       ...formData,
       project_id: Number(formData.project_id),
-      project_title: project.title
+      is_billable: true,
+      progress: 0
     });
   };
 
@@ -644,6 +620,7 @@ const CreateMilestoneDialog = ({
                   {project.title}
                 </MenuItem>
               ))}
+              <MenuItem value="other">Other</MenuItem>
             </Select>
           </FormControl>
           
@@ -658,6 +635,7 @@ const CreateMilestoneDialog = ({
                 <MenuItem value="in_progress">In Progress</MenuItem>
                 <MenuItem value="completed">Completed</MenuItem>
                 <MenuItem value="paused">Paused</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
               </Select>
             </FormControl>
             
@@ -670,6 +648,7 @@ const CreateMilestoneDialog = ({
                 <MenuItem value="low">Low</MenuItem>
                 <MenuItem value="medium">Medium</MenuItem>
                 <MenuItem value="high">High</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
               </Select>
             </FormControl>
           </Box>

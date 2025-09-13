@@ -34,6 +34,7 @@ class User(Base):
     milestones = relationship("Milestone", back_populates="user")
     work_logs = relationship("WorkLog", back_populates="user")
     notifications = relationship("Notification", back_populates="user")
+    recurring_invoices = relationship("RecurringInvoice", back_populates="user")
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, username={self.username})>"
