@@ -1,31 +1,13 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { supabase } from "../../supabase_client";
-import { TextField, Button, Typography, Box, Paper } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { Card, CardContent, Typography, Box, Paper, Button } from '@mui/material'
+import { Login, PersonAdd, ArrowBack } from '@mui/icons-material'
+import Link from 'next/link'
+import { useTheme } from '../../contexts/ThemeContext'
 
-const ResetPasswordPage = () => {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const router = useRouter();
-  const sage = "#889977";
-
-  const handleReset = async () => {
-    setLoading(true);
-    setMessage("");
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset`,
-    });
-
-    if (error) setMessage(error.message);
-    else setMessage("Password reset email sent! Check your inbox.");
-
-    setLoading(false);
-  };
+export default function AuthPage() {
+  const { mode, theme } = useTheme()
+  const sage = theme.palette.primary.main
 
   return (
     <Box
@@ -37,10 +19,11 @@ const ResetPasswordPage = () => {
         position: "relative",
         overflow: "hidden",
         px: 2,
-        background: "linear-gradient(135deg, #0f0f12 0%, #1a1a1f 100%)",
+        background: mode === 'dark' 
+          ? "linear-gradient(135deg, #0f0f12 0%, #1a1a1f 100%)" 
+          : "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
       }}
     >
-      {/* Animated background */}
       <Box
         sx={{
           position: "absolute",
@@ -48,8 +31,7 @@ const ResetPasswordPage = () => {
           left: "-50%",
           width: "200%",
           height: "200%",
-          background:
-            "radial-gradient(circle at center, rgba(136,153,119,0.08), transparent 70%)",
+          background: `radial-gradient(circle at center, ${sage}20, transparent 70%)`,
           animation: "pulse 20s infinite alternate",
           zIndex: 0,
         }}
@@ -63,7 +45,9 @@ const ResetPasswordPage = () => {
           borderRadius: 4,
           width: "100%",
           maxWidth: 480,
-          background: "rgba(17,17,17,0.55)",
+          background: mode === 'dark' 
+            ? "rgba(17,17,17,0.55)" 
+            : "rgba(255,255,255,0.85)",
           backdropFilter: "blur(16px)",
           border: `1px solid ${sage}55`,
           boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
@@ -75,97 +59,80 @@ const ResetPasswordPage = () => {
         }}
       >
         <Box sx={{ textAlign: "center", mb: 4 }}>
-          <Typography variant="h4" sx={{ color: "#fff", fontWeight: 700 }}>
-            Reset Password
+          <Typography variant="h3" sx={{ color: mode === 'dark' ? "#fff" : "#000", fontWeight: 700, mb: 2 }}>
+            Welcome to QuickBird
           </Typography>
-          <Typography sx={{ color: "#ccc", mt: 1 }}>
-            Enter your email and we’ll send you a reset link.
+          <Typography sx={{ color: mode === 'dark' ? "#ccc" : "#666", fontSize: 18 }}>
+            Choose how you'd like to get started
           </Typography>
         </Box>
 
-        <TextField
-          label="Email"
-          fullWidth
-          sx={{
-            mb: 4,
-            input: { color: "#fff", WebkitBoxShadow: "0 0 0 1000px #111 inset" },
-            label: { color: "#ccc" },
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              "&.Mui-focused fieldset": {
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Link href="/auth/login" style={{ textDecoration: "none" }}>
+            <Button
+              variant="contained"
+              fullWidth
+              startIcon={<Login />}
+              sx={{
+                backgroundColor: sage,
+                color: "#000",
+                fontWeight: "bold",
+                fontSize: 16,
+                py: 1.5,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  backgroundColor: "#000",
+                  color: sage,
+                  border: `1px solid ${sage}`,
+                },
+              }}
+            >
+              Sign In
+            </Button>
+          </Link>
+          
+          <Link href="/auth/register" style={{ textDecoration: "none" }}>
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<PersonAdd />}
+              sx={{
+                color: sage,
                 borderColor: sage,
-                boxShadow: `0 0 12px ${sage}66`,
-              },
-              "& input:-webkit-autofill": {
-                WebkitBoxShadow: "0 0 0 1000px #111 inset",
-                WebkitTextFillColor: "#fff",
-              },
-            },
-          }}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <Button
-          variant="contained"
-          fullWidth
-          sx={{
-            backgroundColor: sage,
-            color: "#000",
-            fontWeight: "bold",
-            fontSize: 16,
-            py: 1.5,
-            mb: 2,
-            transition: "all 0.3s ease",
-            "&:hover": {
-              backgroundColor: "#000",
-              color: sage,
-              border: `1px solid ${sage}`,
-            },
-          }}
-          onClick={handleReset}
-          disabled={loading}
-        >
-          {loading ? "Sending..." : "Send Reset Link"}
-        </Button>
-
-        <Button
-          variant="outlined"
-          fullWidth
-          sx={{
-            color: sage,
-            borderColor: sage,
-            fontWeight: "bold",
-            fontSize: 16,
-            py: 1.5,
-            mb: 1,
-            transition: "all 0.3s ease",
-            "&:hover": {
-              backgroundColor: sage,
-              color: "#000",
-              borderColor: sage,
-            },
-          }}
-          onClick={() => router.push("/auth/login")}
-        >
-          Back to Login
-        </Button>
-
-        {message && (
-          <Typography
-            sx={{
-              mt: 2,
-              color: message.includes("sent") ? sage : "tomato",
-              textAlign: "center",
-              fontWeight: 500,
-            }}
-          >
-            {message}
-          </Typography>
-        )}
+                fontWeight: "bold",
+                fontSize: 16,
+                py: 1.5,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  backgroundColor: sage,
+                  color: "#000",
+                  borderColor: sage,
+                },
+              }}
+            >
+              Create Account
+            </Button>
+          </Link>
+          
+          <Box sx={{ mt: 3, textAlign: "center" }}>
+            <Link href="/" style={{ textDecoration: "none" }}>
+              <Button
+                startIcon={<ArrowBack />}
+                sx={{
+                  color: mode === 'dark' ? "#ccc" : "#666",
+                  "&:hover": {
+                    color: mode === 'dark' ? "#fff" : "#000",
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                Back to home
+              </Button>
+            </Link>
+          </Box>
+        </Box>
       </Paper>
 
-      {/* Keyframes */}
       <style>
         {`
           @keyframes pulse {
@@ -175,7 +142,5 @@ const ResetPasswordPage = () => {
         `}
       </style>
     </Box>
-  );
-};
-
-export default ResetPasswordPage;
+  )
+}

@@ -1,52 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "../../../supabase_client";
 import { TextField, Button, Typography, Box, Paper } from "@mui/material";
-import bcrypt from "bcryptjs";
 import LoginIcon from "@mui/icons-material/Login";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../../hooks/use-auth";
+import { useTheme } from "../../../contexts/ThemeContext";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-  const sage = "#889977";
+  const { login, loading } = useAuth();
+  const { mode, theme } = useTheme();
+  const sage = theme.palette.primary.main;
 
   const handleLogin = async () => {
-    setLoading(true);
     setMessage("");
     try {
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", email)
-        .single();
-
-      if (error || !data) {
-        setMessage("User not found");
-      } else {
-        const isValid = bcrypt.compareSync(password, data.hashed_password);
-        if (!isValid) {
-          setMessage("Incorrect password");
-        } else {
-          // ✅ Login successful, set session flag
-          localStorage.setItem("authUser", JSON.stringify({ email: data.email }));
-          setMessage("Login successful!");
-
-          // Redirect immediately
-          router.push("/dashboard");
-        }
-      }
+      await login(email, password);
+      setMessage("Login successful! Redirecting to dashboard...");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
     } catch (err: any) {
-      setMessage(err.message || "Something went wrong!");
+      setMessage(err.message || "Login failed!");
     }
-    setLoading(false);
   };
-
 
   return (
     <Box
@@ -58,7 +40,9 @@ const LoginPage = () => {
         position: "relative",
         overflow: "hidden",
         px: 2,
-        background: "linear-gradient(135deg, #0f0f12 0%, #1a1a1f 100%)",
+        background: mode === 'dark' 
+          ? "linear-gradient(135deg, #0f0f12 0%, #1a1a1f 100%)" 
+          : "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
       }}
     >
       <Box
@@ -69,7 +53,7 @@ const LoginPage = () => {
           width: "200%",
           height: "200%",
           background:
-            "radial-gradient(circle at center, rgba(136,153,119,0.08), transparent 70%)",
+            `radial-gradient(circle at center, ${sage}20, transparent 70%)`,
           animation: "pulse 20s infinite alternate",
           zIndex: 0,
         }}
@@ -83,7 +67,9 @@ const LoginPage = () => {
           borderRadius: 4,
           width: "100%",
           maxWidth: 480,
-          background: "rgba(17,17,17,0.55)",
+          background: mode === 'dark' 
+            ? "rgba(17,17,17,0.55)" 
+            : "rgba(255,255,255,0.85)",
           backdropFilter: "blur(16px)",
           border: `1px solid ${sage}55`,
           boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
@@ -94,13 +80,12 @@ const LoginPage = () => {
           },
         }}
       >
-        
         <Box sx={{ textAlign: "center", mb: 4 }}>
           <LoginIcon sx={{ fontSize: 60, color: sage, mb: 1 }} />
-          <Typography variant="h4" sx={{ color: "#fff", fontWeight: 700 }}>
+          <Typography variant="h4" sx={{ color: mode === 'dark' ? "#fff" : "#000", fontWeight: 700 }}>
             QuickBird Login
           </Typography>
-          <Typography sx={{ color: "#ccc", mt: 1 }}>
+          <Typography sx={{ color: mode === 'dark' ? "#ccc" : "#666", mt: 1 }}>
             Login to manage your projects
           </Typography>
         </Box>
@@ -110,14 +95,14 @@ const LoginPage = () => {
           fullWidth
           sx={{
             mb: 3,
-            input: { color: "#fff", WebkitBoxShadow: "0 0 0 1000px #111 inset" },
-            label: { color: "#ccc" },
+            input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
+            label: { color: mode === 'dark' ? '#ccc' : '#666' },
             "& .MuiOutlinedInput-root": {
               borderRadius: 2,
               "&.Mui-focused fieldset": { borderColor: sage, boxShadow: `0 0 12px ${sage}66` },
               "& input:-webkit-autofill": {
-                WebkitBoxShadow: "0 0 0 1000px #111 inset",
-                WebkitTextFillColor: "#fff",
+                WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
+                WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
               },
             },
           }}
@@ -130,37 +115,21 @@ const LoginPage = () => {
           type="password"
           fullWidth
           sx={{
-            mb: 1, // smaller margin now
-            input: { color: "#fff", WebkitBoxShadow: "0 0 0 1000px #111 inset" },
-            label: { color: "#ccc" },
+            mb: 1,
+            input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
+            label: { color: mode === 'dark' ? '#ccc' : '#666' },
             "& .MuiOutlinedInput-root": {
               borderRadius: 2,
               "&.Mui-focused fieldset": { borderColor: sage, boxShadow: `0 0 12px ${sage}66` },
               "& input:-webkit-autofill": {
-                WebkitBoxShadow: "0 0 0 1000px #111 inset",
-                WebkitTextFillColor: "#fff",
+                WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
+                WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
               },
             },
           }}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-
-        <Typography
-          sx={{
-            mt: 0.5,
-            mb: 3,
-            color: sage,
-            textDecoration: "underline",
-            fontSize: 14,
-            cursor: "pointer",
-            textAlign: "right",
-          }}
-          onClick={() => router.push("/auth/forgot")} // your forgot password page
-        >
-          Forgot password?
-        </Typography>
-
 
         <Button
           variant="contained"

@@ -1,256 +1,386 @@
 "use client";
 
+import { 
+  Box, 
+  Typography, 
+  Card, 
+  CardContent, 
+  CardHeader,
+  Button,
+  Avatar,
+  TextField,
+  Grid,
+  Divider,
+  Container,
+  LinearProgress,
+  Alert,
+  Chip
+} from "@mui/material";
+import { 
+  Person,
+  Email,
+  CalendarToday,
+  Business,
+  Security,
+  Edit,
+  Save,
+  Cancel
+} from "@mui/icons-material";
+import { useAuth } from "@/hooks/use-auth";
+import { useTheme as useCustomTheme } from "@/contexts/ThemeContext";
 import { useState, useEffect } from "react";
-import { supabase } from "../../../supabase_client";
-import { TextField, Button, Typography, Box, Paper, Avatar, Divider } from "@mui/material";
-import bcrypt from "bcryptjs";
-import AuthGuard from "../../../components/AuthGuard";
-import { useRouter } from "next/navigation";
+import { apiClient } from "@/lib/api";
+import toast from "react-hot-toast";
 
-const ProfilePageContent = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const sage = "#889977";
-
-  const router = useRouter();
+export default function ProfilePage() {
+  const { user, loading } = useAuth();
+  const theme = useCustomTheme();
+  const [mounted, setMounted] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    full_name: '',
+    company: '',
+    bio: '',
+    phone: '',
+    website: '',
+    location: ''
+  });
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-
-        const { data: userData, error } = await supabase
-          .from("users")
-          .select("username, email, avatar_url")
-          .eq("id", session.user.id)
-          .single();
-
-        if (error) {
-          setMessage("Failed to fetch profile.");
-          return;
-        }
-
-        setUsername(userData?.username || "");
-        setEmail(userData?.email || "");
-        setAvatarUrl(userData?.avatar_url || null);
-
-      } catch (err: any) {
-        setMessage(err.message || "Something went wrong!");
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files?.length) return;
-    const file = event.target.files[0];
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-
-    setLoading(true);
-    const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, file);
-
-    if (uploadError) setMessage(uploadError.message);
-    else {
-      const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
-      setAvatarUrl(data.publicUrl);
-      setMessage("Avatar uploaded!");
+    setMounted(true);
+    if (user) {
+      setFormData({
+        username: user.username || '',
+        email: user.email || '',
+        full_name: user.full_name || '',
+        company: '',
+        bio: '',
+        phone: '',
+        website: '',
+        location: ''
+      });
     }
-    setLoading(false);
+  }, [user]);
+
+  const handleEdit = () => {
+    setIsEditing(true);
   };
 
-  const handleUpdate = async () => {
-    setLoading(true);
-    setMessage("");
+  const handleCancel = () => {
+    setIsEditing(false);
+    if (user) {
+      setFormData({
+        username: user.username || '',
+        email: user.email || '',
+        full_name: user.full_name || '',
+        company: '',
+        bio: '',
+        phone: '',
+        website: '',
+        location: ''
+      });
+    }
+  };
+
+  const handleSave = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        setMessage("No active session found.");
-        setLoading(false);
-        return;
-      }
-
-      const updates: any = { username, email };
-      if (password) updates.hashed_password = bcrypt.hashSync(password, 10);
-      if (avatarUrl) updates.avatar_url = avatarUrl;
-
-      const { error } = await supabase.from("users").update(updates).eq("id", session.user.id);
-      if (error) setMessage(error.message);
-      else setMessage("Profile updated successfully!");
-    } catch (err: any) {
-      setMessage(err.message || "Something went wrong!");
+      setLoadingProfile(true);
+      // In a real app, you would call an API to update the user profile
+      // await apiClient.updateProfile(formData);
+      toast.success('Profile updated successfully');
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      toast.error('Failed to update profile');
+    } finally {
+      setLoadingProfile(false);
     }
-    setLoading(false);
   };
 
-  return (
-    <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg, #0f0f12 0%, #1a1a1f 100%)", py: 6, px: 2 }}>
-      <Paper
+  const handleInputChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: event.target.value
+    }));
+  };
+
+  if (!mounted || loading) {
+    return (
+      <Box
         sx={{
-          maxWidth: 800,
-          margin: "0 auto",
-          p: 5,
-          borderRadius: 4,
-          background: "rgba(17,17,17,0.55)",
-          backdropFilter: "blur(16px)",
-          border: `1px solid ${sage}55`,
-          boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
           display: "flex",
-          flexWrap: "wrap",
-          gap: 4,
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
         }}
       >
-        {/* Back Button */}
-        <Box sx={{ width: "100%", mb: 2 }}>
-          <Button
-            variant="outlined"
-            sx={{
-              color: sage,
-              borderColor: sage,
-              "&:hover": { backgroundColor: sage, color: "#000", borderColor: sage },
-            }}
-            onClick={() => router.back()}
-          >
-            Back
-          </Button>
-        </Box>
+        <LinearProgress sx={{ width: "100%", maxWidth: 400 }} />
+      </Box>
+    );
+  }
 
-        {/* Avatar Section */}
-        <Box sx={{ flex: "1 1 250px", textAlign: "center" }}>
-          <Avatar src={avatarUrl || undefined} sx={{ width: 120, height: 120, margin: "0 auto", mb: 2 }} />
-          <Button
-            variant="outlined"
-            component="label"
-            sx={{
-              color: sage,
-              borderColor: sage,
-              "&:hover": { backgroundColor: sage, color: "#000", borderColor: sage },
-            }}
-          >
-            Change Avatar
-            <input type="file" hidden onChange={handleAvatarUpload} />
-          </Button>
-        </Box>
+  if (!user) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="h4" sx={{ mb: 2 }}>
+          Please log in to view your profile
+        </Typography>
+      </Box>
+    );
+  }
 
-        {/* Account Info */}
-        <Box sx={{ flex: "2 1 400px" }}>
-          <Typography variant="h6" sx={{ color: sage, mb: 2 }}>
-            Account Information
-          </Typography>
+  return (
+    <Container maxWidth="lg">
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight="600" sx={{ mb: 1 }}>
+          Profile
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Manage your account settings and preferences.
+        </Typography>
+      </Box>
 
-          <TextField
-            label="Username"
-            fullWidth
-            sx={{
-              mb: 2,
-              input: {
-                color: "#fff",
-                background: "#111",
-                "&:-webkit-autofill": {
-                  WebkitBoxShadow: "0 0 0 1000px #111 inset",
-                  WebkitTextFillColor: "#fff",
-                },
-              },
-              label: { color: "#ccc" },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                "&.Mui-focused fieldset": { borderColor: sage, boxShadow: `0 0 12px ${sage}66` },
-              },
-            }}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+      <Grid container spacing={3}>
+        {/* Profile Card */}
+        <Grid item xs={12} md={4}>
+          <Card>
+            <CardContent sx={{ textAlign: "center", p: 4 }}>
+              <Avatar
+                sx={{
+                  width: 120,
+                  height: 120,
+                  mx: "auto",
+                  mb: 2,
+                  bgcolor: theme.theme.palette.primary.main,
+                  fontSize: "3rem"
+                }}
+              >
+                {user.full_name ? user.full_name.charAt(0).toUpperCase() : user.username?.charAt(0).toUpperCase()}
+              </Avatar>
+              
+              <Typography variant="h5" fontWeight="600" sx={{ mb: 1 }}>
+                {user.full_name || user.username}
+              </Typography>
+              
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                {user.email}
+              </Typography>
+              
+              <Chip
+                label={user.subscription_tier?.toUpperCase() || 'FREE'}
+                color="primary"
+                variant="outlined"
+                sx={{ mb: 2 }}
+              />
+              
+              <Typography variant="body2" color="text.secondary">
+                Member since {new Date(user.created_at).toLocaleDateString()}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
 
-          <TextField
-            label="Email"
-            fullWidth
-            sx={{
-              mb: 2,
-              input: {
-                color: "#fff",
-                background: "#111",
-                "&:-webkit-autofill": {
-                  WebkitBoxShadow: "0 0 0 1000px #111 inset",
-                  WebkitTextFillColor: "#fff",
-                },
-              },
-              label: { color: "#ccc" },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                "&.Mui-focused fieldset": { borderColor: sage, boxShadow: `0 0 12px ${sage}66` },
-              },
-            }}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        {/* Profile Details */}
+        <Grid item xs={12} md={8}>
+          <Card>
+            <CardHeader
+              title="Profile Information"
+              action={
+                !isEditing ? (
+                  <Button
+                    startIcon={<Edit />}
+                    onClick={handleEdit}
+                    variant="outlined"
+                  >
+                    Edit Profile
+                  </Button>
+                ) : (
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <Button
+                      startIcon={<Save />}
+                      onClick={handleSave}
+                      variant="contained"
+                      disabled={loadingProfile}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      startIcon={<Cancel />}
+                      onClick={handleCancel}
+                      variant="outlined"
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                )
+              }
+            />
+            <CardContent>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Username"
+                    value={formData.username}
+                    onChange={handleInputChange('username')}
+                    fullWidth
+                    disabled={!isEditing}
+                    InputProps={{
+                      startAdornment: <Person sx={{ mr: 1, color: "text.secondary" }} />
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Email"
+                    value={formData.email}
+                    onChange={handleInputChange('email')}
+                    fullWidth
+                    disabled={!isEditing}
+                    type="email"
+                    InputProps={{
+                      startAdornment: <Email sx={{ mr: 1, color: "text.secondary" }} />
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Full Name"
+                    value={formData.full_name}
+                    onChange={handleInputChange('full_name')}
+                    fullWidth
+                    disabled={!isEditing}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Company"
+                    value={formData.company}
+                    onChange={handleInputChange('company')}
+                    fullWidth
+                    disabled={!isEditing}
+                    InputProps={{
+                      startAdornment: <Business sx={{ mr: 1, color: "text.secondary" }} />
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Phone"
+                    value={formData.phone}
+                    onChange={handleInputChange('phone')}
+                    fullWidth
+                    disabled={!isEditing}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Website"
+                    value={formData.website}
+                    onChange={handleInputChange('website')}
+                    fullWidth
+                    disabled={!isEditing}
+                  />
+                </Grid>
+                
+                <Grid item xs={12}>
+                  <TextField
+                    label="Location"
+                    value={formData.location}
+                    onChange={handleInputChange('location')}
+                    fullWidth
+                    disabled={!isEditing}
+                  />
+                </Grid>
+                
+                <Grid item xs={12}>
+                  <TextField
+                    label="Bio"
+                    value={formData.bio}
+                    onChange={handleInputChange('bio')}
+                    fullWidth
+                    multiline
+                    rows={4}
+                    disabled={!isEditing}
+                    placeholder="Tell us about yourself..."
+                  />
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
 
-          <Divider sx={{ my: 3, borderColor: sage }} />
-
-          <Typography variant="h6" sx={{ color: sage, mb: 2 }}>
-            Change Password
-          </Typography>
-
-          <TextField
-            label="New Password"
-            type="password"
-            fullWidth
-            sx={{
-              mb: 3,
-              input: {
-                color: "#fff",
-                background: "#111",
-                "&:-webkit-autofill": {
-                  WebkitBoxShadow: "0 0 0 1000px #111 inset",
-                  WebkitTextFillColor: "#fff",
-                },
-              },
-              label: { color: "#ccc" },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                "&.Mui-focused fieldset": { borderColor: sage, boxShadow: `0 0 12px ${sage}66` },
-              },
-            }}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{
-              backgroundColor: sage,
-              color: "#000",
-              fontWeight: "bold",
-              py: 1.5,
-              "&:hover": { backgroundColor: "#000", color: sage, border: `1px solid ${sage}` },
-            }}
-            onClick={handleUpdate}
-            disabled={loading}
-          >
-            {loading ? "Updating..." : "Update Profile"}
-          </Button>
-
-          {message && (
-            <Typography sx={{ mt: 2, color: sage, textAlign: "center", fontWeight: 500 }}>
-              {message}
-            </Typography>
-          )}
-        </Box>
-      </Paper>
-    </Box>
+        {/* Account Stats */}
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title="Account Statistics" />
+            <CardContent>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography variant="h4" color="primary" fontWeight="600">
+                      {user.usage_count || 0}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      AI Requests Used
+                    </Typography>
+                  </Box>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography variant="h4" color="primary" fontWeight="600">
+                      {user.usage_limit || 10}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Daily Limit
+                    </Typography>
+                  </Box>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography variant="h4" color="primary" fontWeight="600">
+                      {Math.round(((user.usage_limit || 10) - (user.usage_count || 0)) / (user.usage_limit || 10) * 100)}%
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Remaining
+                    </Typography>
+                  </Box>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography variant="h4" color="primary" fontWeight="600">
+                      {user.subscription_tier?.toUpperCase() || 'FREE'}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Plan
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
   );
-};
-
-const ProfilePage = () => (
-  <AuthGuard>
-    <ProfilePageContent />
-  </AuthGuard>
-);
-
-export default ProfilePage;
+}

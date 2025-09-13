@@ -1,57 +1,101 @@
-"use client";
+'use client'
 
-import { Drawer, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import FolderIcon from "@mui/icons-material/Folder";
-import TaskIcon from "@mui/icons-material/Task";
-import BuildIcon from "@mui/icons-material/Build";
-import PeopleIcon from "@mui/icons-material/People";
-import { useRouter } from "next/navigation";
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import { 
+  LayoutDashboard, 
+  Folder, 
+  CheckSquare, 
+  Wrench, 
+  User, 
+  Settings,
+  LogOut 
+} from 'lucide-react'
+import { useAuth } from '@/hooks/use-auth'
 
-const Sidebar = () => {
-  const router = useRouter();
+const navigation = [
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Projects', href: '/dashboard/projects', icon: Folder },
+  { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
+  { name: 'Tools', href: '/dashboard/tools', icon: Wrench },
+  { name: 'Users', href: '/dashboard/users', icon: User },
+]
 
-  const menuItems = [
-    { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
-    { text: "Projects", icon: <FolderIcon />, path: "/dashboard/projects" },
-    { text: "Tasks", icon: <TaskIcon />, path: "/dashboard/tasks" },
-    { text: "Tools", icon: <BuildIcon />, path: "/dashboard/tools" },
-    { text: "Users", icon: <PeopleIcon />, path: "/dashboard/users" },
-  ];
+export default function Sidebar() {
+  const pathname = usePathname()
+  const { logout } = useAuth()
 
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: 240,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: 240,
-          boxSizing: "border-box",
-          background: "rgba(0,0,0,0.6)",
-          color: "#fff",
-          borderRight: "1px solid rgba(255,255,255,0.1)",
-        },
-      }}
-    >
-      <List>
-        {menuItems.map((item) => (
-          <ListItem
-                key={item.text}
-                component="button"
-                onClick={() => router.push(item.path)}
-                sx={{
-                    textAlign: "left",
-                    "&:hover": { backgroundColor: "rgba(255,255,255,0.08)" },
-                }}
-                >
-                <ListItemIcon sx={{ color: "#fff" }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-          </ListItem>
-        ))}
-      </List>
-    </Drawer>
-  );
-};
+    <div className="flex flex-col h-full">
+      {/* Logo */}
+      <div className="flex items-center space-x-2 px-6 py-4 border-b border-white/10">
+        <div className="w-8 h-8 bg-olive-500 rounded-lg flex items-center justify-center">
+          <span className="text-white font-bold text-sm">Q</span>
+        </div>
+        <span className="text-xl font-bold text-white">QuickBird</span>
+      </div>
 
-export default Sidebar;
+      {/* Navigation */}
+      <nav className="flex-1 px-4 py-6 space-y-2">
+        {navigation.map((item) => {
+          const isActive = pathname === item.href
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={cn(
+                'flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                isActive
+                  ? 'bg-olive-500/20 text-olive-400 border border-olive-500/30'
+                  : 'text-gray-300 hover:text-white hover:bg-white/5'
+              )}
+            >
+              <item.icon className="w-5 h-5" />
+              <span>{item.name}</span>
+            </Link>
+          )
+        })}
+      </nav>
+
+      {/* User Section */}
+      <div className="px-4 py-4 border-t border-white/10">
+        <div className="space-y-2">
+          <Link
+            href="/dashboard/profile"
+            className={cn(
+              'flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              pathname === '/dashboard/profile'
+                ? 'bg-olive-500/20 text-olive-400 border border-olive-500/30'
+                : 'text-gray-300 hover:text-white hover:bg-white/5'
+            )}
+          >
+            <User className="w-5 h-5" />
+            <span>Profile</span>
+          </Link>
+          
+          <Link
+            href="/dashboard/settings"
+            className={cn(
+              'flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              pathname === '/dashboard/settings'
+                ? 'bg-olive-500/20 text-olive-400 border border-olive-500/30'
+                : 'text-gray-300 hover:text-white hover:bg-white/5'
+            )}
+          >
+            <Settings className="w-5 h-5" />
+            <span>Settings</span>
+          </Link>
+          
+          <button
+            onClick={() => logout()}
+            className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

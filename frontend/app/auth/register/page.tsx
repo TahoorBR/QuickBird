@@ -1,44 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "../../../supabase_client";
 import { TextField, Button, Typography, Box, Paper } from "@mui/material";
-import bcrypt from "bcryptjs";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../../hooks/use-auth";
+import { useTheme } from "../../../contexts/ThemeContext";
 
 const RegisterPage = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [fullName, setFullName] = useState("");
   const [message, setMessage] = useState("");
 
   const router = useRouter();
-
-  const sage = "#889977"; // dark olive/sage
+  const { register, loading } = useAuth();
+  const { mode, theme } = useTheme();
+  const sage = theme.palette.primary.main;
 
   const handleRegister = async () => {
-    setLoading(true);
     setMessage("");
     try {
-      const hashedPassword = bcrypt.hashSync(password, 10);
-
-      const { data, error } = await supabase.from("users").insert([
-        {
-          username,
-          email,
-          hashed_password: hashedPassword,
-          role: "user",
-        },
-      ]);
-
-      if (error) setMessage(error.message);
-      else setMessage("User registered successfully!");
+      await register(email, password, username, fullName);
+      setMessage("User registered successfully! Redirecting to dashboard...");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
     } catch (err: any) {
-      setMessage(err.message || "Something went wrong!");
+      setMessage(err.message || "Registration failed!");
     }
-    setLoading(false);
   };
 
   return (
@@ -51,10 +42,11 @@ const RegisterPage = () => {
         position: "relative",
         overflow: "hidden",
         px: 2,
-        background: "linear-gradient(135deg, #0f0f12 0%, #1a1a1f 100%)",
+        background: mode === 'dark' 
+          ? "linear-gradient(135deg, #0f0f12 0%, #1a1a1f 100%)" 
+          : "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
       }}
     >
-      {/* Animated background layer */}
       <Box
         sx={{
           position: "absolute",
@@ -62,7 +54,7 @@ const RegisterPage = () => {
           left: "-50%",
           width: "200%",
           height: "200%",
-          background: "radial-gradient(circle at center, rgba(136,153,119,0.08), transparent 70%)",
+          background: `radial-gradient(circle at center, ${sage}20, transparent 70%)`,
           animation: "pulse 20s infinite alternate",
           zIndex: 0,
         }}
@@ -76,7 +68,9 @@ const RegisterPage = () => {
           borderRadius: 4,
           width: "100%",
           maxWidth: 480,
-          background: "rgba(17,17,17,0.55)",
+          background: mode === 'dark' 
+            ? "rgba(17,17,17,0.55)" 
+            : "rgba(255,255,255,0.85)",
           backdropFilter: "blur(16px)",
           border: `1px solid ${sage}55`,
           boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
@@ -89,21 +83,21 @@ const RegisterPage = () => {
       >
         <Box sx={{ textAlign: "center", mb: 4 }}>
           <HowToRegIcon sx={{ fontSize: 60, color: sage, mb: 1 }} />
-          <Typography variant="h4" sx={{ color: "#fff", fontWeight: 700 }}>
+          <Typography variant="h4" sx={{ color: mode === 'dark' ? "#fff" : "#000", fontWeight: 700 }}>
             QuickBird Register
           </Typography>
-          <Typography sx={{ color: "#ccc", mt: 1 }}>
+          <Typography sx={{ color: mode === 'dark' ? "#ccc" : "#666", mt: 1 }}>
             Create your account and start managing your projects
           </Typography>
         </Box>
 
         <TextField
-          label="Username"
+          label="Full Name"
           fullWidth
           sx={{
             mb: 3,
-            input: { color: "#fff", WebkitBoxShadow: "0 0 0 1000px #111 inset" },
-            label: { color: "#ccc" },
+            input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
+            label: { color: mode === 'dark' ? '#ccc' : '#666' },
             "& .MuiOutlinedInput-root": {
               borderRadius: 2,
               "&.Mui-focused fieldset": {
@@ -111,8 +105,31 @@ const RegisterPage = () => {
                 boxShadow: `0 0 12px ${sage}66`,
               },
               "& input:-webkit-autofill": {
-                WebkitBoxShadow: "0 0 0 1000px #111 inset",
-                WebkitTextFillColor: "#fff",
+                WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
+                WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
+              },
+            },
+          }}
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+        />
+
+        <TextField
+          label="Username"
+          fullWidth
+          sx={{
+            mb: 3,
+            input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
+            label: { color: mode === 'dark' ? '#ccc' : '#666' },
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              "&.Mui-focused fieldset": {
+                borderColor: sage,
+                boxShadow: `0 0 12px ${sage}66`,
+              },
+              "& input:-webkit-autofill": {
+                WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
+                WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
               },
             },
           }}
@@ -125,8 +142,8 @@ const RegisterPage = () => {
           fullWidth
           sx={{
             mb: 3,
-            input: { color: "#fff", WebkitBoxShadow: "0 0 0 1000px #111 inset" },
-            label: { color: "#ccc" },
+            input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
+            label: { color: mode === 'dark' ? '#ccc' : '#666' },
             "& .MuiOutlinedInput-root": {
               borderRadius: 2,
               "&.Mui-focused fieldset": {
@@ -134,8 +151,8 @@ const RegisterPage = () => {
                 boxShadow: `0 0 12px ${sage}66`,
               },
               "& input:-webkit-autofill": {
-                WebkitBoxShadow: "0 0 0 1000px #111 inset",
-                WebkitTextFillColor: "#fff",
+                WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
+                WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
               },
             },
           }}
@@ -149,8 +166,8 @@ const RegisterPage = () => {
           fullWidth
           sx={{
             mb: 4,
-            input: { color: "#fff", WebkitBoxShadow: "0 0 0 1000px #111 inset" },
-            label: { color: "#ccc" },
+            input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
+            label: { color: mode === 'dark' ? '#ccc' : '#666' },
             "& .MuiOutlinedInput-root": {
               borderRadius: 2,
               "&.Mui-focused fieldset": {
@@ -158,8 +175,8 @@ const RegisterPage = () => {
                 boxShadow: `0 0 12px ${sage}66`,
               },
               "& input:-webkit-autofill": {
-                WebkitBoxShadow: "0 0 0 1000px #111 inset",
-                WebkitTextFillColor: "#fff",
+                WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
+                WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
               },
             },
           }}
@@ -179,8 +196,8 @@ const RegisterPage = () => {
             mb: 2,
             transition: "all 0.3s ease",
             "&:hover": {
-              backgroundColor: "#000", // previous text color
-              color: sage,             // previous bg color
+              backgroundColor: "#000",
+              color: sage,
               border: `1px solid ${sage}`,
             },
           }}
@@ -202,8 +219,8 @@ const RegisterPage = () => {
             mb: 1,
             transition: "all 0.3s ease",
             "&:hover": {
-              backgroundColor: sage,  // fill with border color
-              color: "#000",           // text becomes black
+              backgroundColor: sage,
+              color: "#000",
               borderColor: sage,
             },
           }}
@@ -226,7 +243,6 @@ const RegisterPage = () => {
         )}
       </Paper>
 
-      {/* Keyframes */}
       <style>
         {`
           @keyframes pulse {
