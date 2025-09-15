@@ -6,7 +6,6 @@ import asyncio
 from datetime import datetime
 
 from ...core.database import get_db
-from ...core.security import get_current_user_ws
 from ...models.user import User
 from ...models.notification import Notification
 
