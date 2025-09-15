@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { TextField, Button, Typography, Box, Paper } from "@mui/material";
+import { TextField, Button, Typography, Box, Paper, Container, Grid, Avatar, alpha } from "@mui/material";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
+import { FlashOn, ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../hooks/use-auth";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -37,16 +38,14 @@ const RegisterPage = () => {
       sx={{
         minHeight: "100vh",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
         position: "relative",
         overflow: "hidden",
-        px: 2,
         background: mode === 'dark' 
           ? "linear-gradient(135deg, #0f0f12 0%, #1a1a1f 100%)" 
-          : "linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)",
+          : "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
       }}
     >
+      {/* Background Animation */}
       <Box
         sx={{
           position: "absolute",
@@ -60,188 +59,333 @@ const RegisterPage = () => {
         }}
       />
 
-      <Paper
-        sx={{
-          position: "relative",
-          zIndex: 1,
-          p: 6,
-          borderRadius: 4,
-          width: "100%",
-          maxWidth: 480,
-          background: mode === 'dark' 
-            ? "rgba(17,17,17,0.55)" 
-            : "rgba(255,255,255,0.85)",
-          backdropFilter: "blur(16px)",
-          border: `1px solid ${sage}55`,
-          boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
-          transition: "transform 0.3s ease, box-shadow 0.3s ease",
-          "&:hover": {
-            transform: "translateY(-5px)",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.85)",
-          },
-        }}
-      >
-        <Box sx={{ textAlign: "center", mb: 4 }}>
-          <HowToRegIcon sx={{ fontSize: 60, color: sage, mb: 1 }} />
-          <Typography variant="h4" sx={{ color: mode === 'dark' ? "#fff" : "#000", fontWeight: 700 }}>
-            QuickBird Register
-          </Typography>
-          <Typography sx={{ color: mode === 'dark' ? "#ccc" : "#666", mt: 1 }}>
-            Create your account and start managing your projects
-          </Typography>
-        </Box>
+      {/* Main Content Container */}
+      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1, py: 4 }}>
+        <Grid container sx={{ minHeight: "100vh", alignItems: "center" }}>
+          {/* Left Side - Registration Form */}
+          <Grid item xs={12} md={6} sx={{ pr: { md: 4 } }}>
+            <Paper
+              sx={{
+                p: 6,
+                borderRadius: 4,
+                background: mode === 'dark' 
+                  ? "rgba(17,17,17,0.55)" 
+                  : "rgba(255,255,255,0.85)",
+                backdropFilter: "blur(16px)",
+                border: `1px solid ${sage}55`,
+                boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-5px)",
+                  boxShadow: "0 20px 60px rgba(0,0,0,0.85)",
+                },
+              }}
+            >
+              {/* Back Button */}
+              <Box sx={{ mb: 3 }}>
+                <Button
+                  startIcon={<ArrowBack />}
+                  onClick={() => router.push("/auth")}
+                  sx={{
+                    color: mode === 'dark' ? "#ccc" : "#666",
+                    "&:hover": {
+                      color: mode === 'dark' ? "#fff" : "#000",
+                      backgroundColor: "transparent",
+                    },
+                  }}
+                >
+                  Back to Auth
+                </Button>
+              </Box>
 
-        <TextField
-          label="Full Name"
-          fullWidth
-          sx={{
-            mb: 3,
-            input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
-            label: { color: mode === 'dark' ? '#ccc' : '#666' },
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              "&.Mui-focused fieldset": {
-                borderColor: sage,
-                boxShadow: `0 0 12px ${sage}66`,
-              },
-              "& input:-webkit-autofill": {
-                WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
-                WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
-              },
-            },
-          }}
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
+              {/* Form Header */}
+              <Box sx={{ textAlign: "center", mb: 4 }}>
+                <HowToRegIcon sx={{ fontSize: 60, color: sage, mb: 2 }} />
+                <Typography variant="h4" sx={{ color: mode === 'dark' ? "#fff" : "#000", fontWeight: 700, mb: 1 }}>
+                  Create Account
+                </Typography>
+                <Typography sx={{ color: mode === 'dark' ? "#ccc" : "#666" }}>
+                  Join QuickBird and start managing your projects
+                </Typography>
+              </Box>
 
-        <TextField
-          label="Username"
-          fullWidth
-          sx={{
-            mb: 3,
-            input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
-            label: { color: mode === 'dark' ? '#ccc' : '#666' },
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              "&.Mui-focused fieldset": {
-                borderColor: sage,
-                boxShadow: `0 0 12px ${sage}66`,
-              },
-              "& input:-webkit-autofill": {
-                WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
-                WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
-              },
-            },
-          }}
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+              {/* Registration Form */}
+              <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                <TextField
+                  label="Full Name"
+                  fullWidth
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  sx={{
+                    input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
+                    label: { color: mode === 'dark' ? '#ccc' : '#666' },
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 2,
+                      "&.Mui-focused fieldset": {
+                        borderColor: sage,
+                        boxShadow: `0 0 12px ${sage}66`,
+                      },
+                      "& input:-webkit-autofill": {
+                        WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
+                        WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
+                      },
+                    },
+                  }}
+                />
 
-        <TextField
-          label="Email"
-          fullWidth
-          sx={{
-            mb: 3,
-            input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
-            label: { color: mode === 'dark' ? '#ccc' : '#666' },
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              "&.Mui-focused fieldset": {
-                borderColor: sage,
-                boxShadow: `0 0 12px ${sage}66`,
-              },
-              "& input:-webkit-autofill": {
-                WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
-                WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
-              },
-            },
-          }}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+                <TextField
+                  label="Username"
+                  fullWidth
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  sx={{
+                    input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
+                    label: { color: mode === 'dark' ? '#ccc' : '#666' },
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 2,
+                      "&.Mui-focused fieldset": {
+                        borderColor: sage,
+                        boxShadow: `0 0 12px ${sage}66`,
+                      },
+                      "& input:-webkit-autofill": {
+                        WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
+                        WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
+                      },
+                    },
+                  }}
+                />
 
-        <TextField
-          label="Password"
-          type="password"
-          fullWidth
-          sx={{
-            mb: 4,
-            input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
-            label: { color: mode === 'dark' ? '#ccc' : '#666' },
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              "&.Mui-focused fieldset": {
-                borderColor: sage,
-                boxShadow: `0 0 12px ${sage}66`,
-              },
-              "& input:-webkit-autofill": {
-                WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
-                WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
-              },
-            },
-          }}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+                <TextField
+                  label="Email"
+                  type="email"
+                  fullWidth
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  sx={{
+                    input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
+                    label: { color: mode === 'dark' ? '#ccc' : '#666' },
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 2,
+                      "&.Mui-focused fieldset": {
+                        borderColor: sage,
+                        boxShadow: `0 0 12px ${sage}66`,
+                      },
+                      "& input:-webkit-autofill": {
+                        WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
+                        WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
+                      },
+                    },
+                  }}
+                />
 
-        <Button
-          variant="contained"
-          fullWidth
-          sx={{
-            backgroundColor: sage,
-            color: "#000",
-            fontWeight: "bold",
-            fontSize: 16,
-            py: 1.5,
-            mb: 2,
-            transition: "all 0.3s ease",
-            "&:hover": {
-              backgroundColor: "#000",
-              color: sage,
-              border: `1px solid ${sage}`,
-            },
-          }}
-          onClick={handleRegister}
-          disabled={loading}
-        >
-          {loading ? "Registering..." : "Register"}
-        </Button>
+                <TextField
+                  label="Password"
+                  type="password"
+                  fullWidth
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  sx={{
+                    input: { color: mode === 'dark' ? '#fff' : '#000', WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset` },
+                    label: { color: mode === 'dark' ? '#ccc' : '#666' },
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 2,
+                      "&.Mui-focused fieldset": {
+                        borderColor: sage,
+                        boxShadow: `0 0 12px ${sage}66`,
+                      },
+                      "& input:-webkit-autofill": {
+                        WebkitBoxShadow: `0 0 0 1000px ${mode === 'dark' ? '#111' : '#fff'} inset`,
+                        WebkitTextFillColor: mode === 'dark' ? '#fff' : '#000',
+                      },
+                    },
+                  }}
+                />
 
-        <Button
-          variant="outlined"
-          fullWidth
-          sx={{
-            color: sage,
-            borderColor: sage,
-            fontWeight: "bold",
-            fontSize: 16,
-            py: 1.5,
-            mb: 1,
-            transition: "all 0.3s ease",
-            "&:hover": {
-              backgroundColor: sage,
-              color: "#000",
-              borderColor: sage,
-            },
-          }}
-          onClick={() => router.push("/auth/login")}
-        >
-          Already have an account? Login
-        </Button>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  size="large"
+                  onClick={handleRegister}
+                  disabled={loading}
+                  sx={{
+                    backgroundColor: sage,
+                    color: "#000",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    py: 1.5,
+                    mt: 2,
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      backgroundColor: "#000",
+                      color: sage,
+                      border: `1px solid ${sage}`,
+                    },
+                    "&:disabled": {
+                      backgroundColor: alpha(sage, 0.5),
+                      color: "#666",
+                    },
+                  }}
+                >
+                  {loading ? "Creating Account..." : "Create Account"}
+                </Button>
 
-        {message && (
-          <Typography
-            sx={{
-              mt: 2,
-              color: message.includes("successfully") ? sage : "tomato",
-              textAlign: "center",
-              fontWeight: 500,
-            }}
-          >
-            {message}
-          </Typography>
-        )}
-      </Paper>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  size="large"
+                  onClick={() => router.push("/auth/login")}
+                  sx={{
+                    color: sage,
+                    borderColor: sage,
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    py: 1.5,
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      backgroundColor: sage,
+                      color: "#000",
+                      borderColor: sage,
+                    },
+                  }}
+                >
+                  Already have an account? Sign In
+                </Button>
+
+                {message && (
+                  <Typography
+                    sx={{
+                      mt: 2,
+                      color: message.includes("successfully") ? sage : "tomato",
+                      textAlign: "center",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {message}
+                  </Typography>
+                )}
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Right Side - QuickBird Branding */}
+          <Grid item xs={12} md={6} sx={{ pl: { md: 4 }, mt: { xs: 4, md: 0 } }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                height: "100%",
+                minHeight: { xs: "400px", md: "600px" },
+                position: "relative",
+              }}
+            >
+              {/* Logo and Branding */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  mb: 4,
+                }}
+              >
+                <Avatar
+                  sx={{
+                    width: 120,
+                    height: 120,
+                    mb: 3,
+                    background: `linear-gradient(45deg, ${sage}, #2196F3)`,
+                    boxShadow: `0 8px 32px ${alpha(sage, 0.3)}`,
+                  }}
+                >
+                  <FlashOn sx={{ fontSize: 60, color: "white" }} />
+                </Avatar>
+                
+                <Typography
+                  variant="h2"
+                  sx={{
+                    fontWeight: 800,
+                    mb: 2,
+                    background: `linear-gradient(45deg, ${sage}, #2196F3)`,
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  QuickBird
+                </Typography>
+                
+                <Typography
+                  variant="h5"
+                  sx={{
+                    color: mode === 'dark' ? "#ccc" : "#666",
+                    fontWeight: 400,
+                    mb: 4,
+                    maxWidth: "400px",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  AI-powered tools for freelancers to manage projects, generate proposals, and grow their business.
+                </Typography>
+              </Box>
+
+              {/* Features List */}
+              <Box sx={{ textAlign: "left", maxWidth: "400px" }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: mode === 'dark' ? "#fff" : "#000",
+                    fontWeight: 600,
+                    mb: 3,
+                    textAlign: "center",
+                  }}
+                >
+                  What you'll get:
+                </Typography>
+                
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  {[
+                    "🤖 AI-powered proposal generation",
+                    "📊 Smart project management",
+                    "⏰ Intelligent time tracking",
+                    "💰 Professional invoicing",
+                    "📈 Analytics and insights",
+                    "🔒 Secure and reliable"
+                  ].map((feature, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                        p: 2,
+                        borderRadius: 2,
+                        background: alpha(sage, 0.1),
+                        border: `1px solid ${alpha(sage, 0.2)}`,
+                        transition: "all 0.3s ease",
+                        "&:hover": {
+                          background: alpha(sage, 0.15),
+                          transform: "translateX(8px)",
+                        },
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          color: mode === 'dark' ? "#fff" : "#000",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {feature}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
 
       <style>
         {`
