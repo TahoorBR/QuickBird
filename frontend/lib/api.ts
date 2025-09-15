@@ -534,11 +534,6 @@ class ApiClient {
   }
 
   // Enhanced Invoice methods
-  async updateInvoice(id: number, invoice: Partial<Invoice>): Promise<Invoice> {
-    const response: AxiosResponse<Invoice> = await this.client.put(`/api/v1/invoices/${id}`, invoice)
-    return response.data
-  }
-
   async sendInvoice(id: number, recipientEmail?: string, customMessage?: string): Promise<void> {
     await this.client.post(`/api/v1/invoices/${id}/send`, {
       recipient_email: recipientEmail,
