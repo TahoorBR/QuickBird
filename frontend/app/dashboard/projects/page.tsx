@@ -830,7 +830,7 @@ const EditProjectDialog = ({
             <InputLabel>Status</InputLabel>
             <Select
               value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'paused' | 'completed' })}
               label="Status"
             >
               <MenuItem value="active">Active</MenuItem>

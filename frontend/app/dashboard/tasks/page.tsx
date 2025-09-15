@@ -1249,7 +1249,7 @@ const EditTaskDialog = ({
               <InputLabel>Status</InputLabel>
               <Select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as 'pending' | 'in_progress' | 'completed' })}
                 label="Status"
               >
                 <MenuItem value="pending">Pending</MenuItem>
@@ -1263,7 +1263,7 @@ const EditTaskDialog = ({
               <InputLabel>Priority</InputLabel>
               <Select
                 value={formData.priority}
-                onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, priority: e.target.value as 'low' | 'medium' | 'high' })}
                 label="Priority"
               >
                 <MenuItem value="low">Low</MenuItem>

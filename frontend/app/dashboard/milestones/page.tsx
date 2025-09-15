@@ -780,7 +780,7 @@ const EditMilestoneDialog = ({
             <InputLabel>Status</InputLabel>
             <Select
               value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value as 'not_started' | 'in_progress' | 'completed' | 'paused' })}
               label="Status"
             >
               <MenuItem value="not_started">Not Started</MenuItem>
@@ -794,7 +794,7 @@ const EditMilestoneDialog = ({
             <InputLabel>Priority</InputLabel>
             <Select
               value={formData.priority}
-              onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, priority: e.target.value as 'low' | 'medium' | 'high' })}
               label="Priority"
             >
               <MenuItem value="low">Low</MenuItem>
