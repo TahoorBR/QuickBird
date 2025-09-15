@@ -277,7 +277,7 @@ const RegisterPage = () => {
                 justifyContent: "center",
                 textAlign: "center",
                 height: "100%",
-                minHeight: { xs: "400px", md: "600px" },
+                minHeight: { xs: "300px", md: "450px" },
                 position: "relative",
               }}
             >
@@ -287,26 +287,26 @@ const RegisterPage = () => {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  mb: 4,
+                  mb: 3,
                 }}
               >
                 <Avatar
                   sx={{
-                    width: 120,
-                    height: 120,
-                    mb: 3,
+                    width: 80,
+                    height: 80,
+                    mb: 2,
                     background: `linear-gradient(45deg, ${sage}, #2196F3)`,
-                    boxShadow: `0 8px 32px ${alpha(sage, 0.3)}`,
+                    boxShadow: `0 6px 24px ${alpha(sage, 0.3)}`,
                   }}
                 >
-                  <FlashOn sx={{ fontSize: 60, color: "white" }} />
+                  <FlashOn sx={{ fontSize: 40, color: "white" }} />
                 </Avatar>
                 
                 <Typography
-                  variant="h2"
+                  variant="h3"
                   sx={{
                     fontWeight: 800,
-                    mb: 2,
+                    mb: 1,
                     background: `linear-gradient(45deg, ${sage}, #2196F3)`,
                     backgroundClip: "text",
                     WebkitBackgroundClip: "text",
@@ -317,13 +317,14 @@ const RegisterPage = () => {
                 </Typography>
                 
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   sx={{
                     color: mode === 'dark' ? "#ccc" : "#666",
                     fontWeight: 400,
-                    mb: 4,
+                    mb: 3,
                     maxWidth: "400px",
-                    lineHeight: 1.6,
+                    lineHeight: 1.5,
+                    textAlign: "center",
                   }}
                 >
                   AI-powered tools for freelancers to manage projects, generate proposals, and grow their business.
@@ -331,42 +332,42 @@ const RegisterPage = () => {
               </Box>
 
               {/* Features List */}
-              <Box sx={{ textAlign: "left", maxWidth: "400px" }}>
+              <Box sx={{ textAlign: "left", maxWidth: "500px" }}>
                 <Typography
                   variant="h6"
                   sx={{
                     color: mode === 'dark' ? "#fff" : "#000",
                     fontWeight: 600,
-                    mb: 3,
+                    mb: 2,
                     textAlign: "center",
                   }}
                 >
                   What you'll get:
                 </Typography>
                 
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
                   {[
-                    "🤖 AI-powered proposal generation",
-                    "📊 Smart project management",
-                    "⏰ Intelligent time tracking",
-                    "💰 Professional invoicing",
-                    "📈 Analytics and insights",
-                    "🔒 Secure and reliable"
+                    "🤖 AI proposals",
+                    "📊 Smart management",
+                    "⏰ Time tracking",
+                    "💰 Invoicing",
+                    "📈 Analytics",
+                    "🔒 Secure"
                   ].map((feature, index) => (
                     <Box
                       key={index}
                       sx={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 2,
-                        p: 2,
-                        borderRadius: 2,
+                        gap: 1,
+                        p: 1.5,
+                        borderRadius: 1.5,
                         background: alpha(sage, 0.1),
                         border: `1px solid ${alpha(sage, 0.2)}`,
                         transition: "all 0.3s ease",
                         "&:hover": {
                           background: alpha(sage, 0.15),
-                          transform: "translateX(8px)",
+                          transform: "translateX(4px)",
                         },
                       }}
                     >
@@ -374,6 +375,7 @@ const RegisterPage = () => {
                         sx={{
                           color: mode === 'dark' ? "#fff" : "#000",
                           fontWeight: 500,
+                          fontSize: "0.9rem",
                         }}
                       >
                         {feature}

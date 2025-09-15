@@ -7,6 +7,10 @@ echo "🚀 Building QuickBird Backend..."
 echo "📦 Installing dependencies..."
 pip install -r requirements.txt
 
+# Create uploads directory
+echo "📁 Creating uploads directory..."
+mkdir -p uploads
+
 # Run database migrations
 echo "🗄️ Running database migrations..."
 alembic upgrade head

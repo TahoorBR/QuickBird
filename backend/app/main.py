@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 import uvicorn
 import asyncio
+import os
 from contextlib import asynccontextmanager
 
 from .core.config import settings
@@ -18,6 +19,11 @@ from .api.v1 import auth, users, projects, tasks, ai, payments, clients, invoice
 async def lifespan(app: FastAPI):
     # Startup
     Base.metadata.create_all(bind=engine)
+    
+    # Create uploads directory if it doesn't exist
+    uploads_dir = "uploads"
+    if not os.path.exists(uploads_dir):
+        os.makedirs(uploads_dir, exist_ok=True)
     
     # Start usage reset scheduler
     if not settings.DEBUG:  # Only run in production
@@ -40,8 +46,9 @@ app = FastAPI(
 # Add middleware
 app.middleware("http")(rate_limit_middleware)
 
-# Mount static files for uploads
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+# Mount static files for uploads (only if directory exists)
+if os.path.exists("uploads"):
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.add_middleware(
     CORSMiddleware,
