@@ -81,13 +81,13 @@ async def rate_limit_middleware(request: Request, call_next):
     
     # Different rate limits for different endpoints
     if request.url.path.startswith("/api/v1/auth"):
-        max_requests = 100  # 100 requests per hour for auth (increased for development)
+        max_requests = 1000  # 100 requests per hour for auth (increased for development)
         window_seconds = 3600
     elif request.url.path.startswith("/api/v1/ai"):
         max_requests = 200  # 200 AI requests per hour
         window_seconds = 3600
     else:
-        max_requests = 500  # 500 requests per hour for other endpoints
+        max_requests = 1000  # 500 requests per hour for other endpoints
         window_seconds = 3600
     
     if rate_limiter.is_rate_limited(client_ip, max_requests, window_seconds):

@@ -63,6 +63,7 @@ async def create_project(
     db_project = Project(
         title=project.title,
         description=project.description,
+        status=project.status,
         client_name=project.client_name,
         client_email=project.client_email,
         budget=project.budget,

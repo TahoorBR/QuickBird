@@ -6,6 +6,7 @@ from decimal import Decimal
 class ProjectBase(BaseModel):
     title: str
     description: Optional[str] = None
+    status: str = "active"  # Add status field with default value
     client_name: Optional[str] = None
     client_email: Optional[EmailStr] = None
     budget: Optional[int] = None  # In cents

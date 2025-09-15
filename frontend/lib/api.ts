@@ -528,7 +528,7 @@ class ApiClient {
     formData.append('file', file)
     formData.append('type', type)
 
-    const response: AxiosResponse<{ url: string }> = await this.client.post('/upload', formData, {
+    const response: AxiosResponse<{ url: string }> = await this.client.post('/api/v1/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

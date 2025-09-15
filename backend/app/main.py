@@ -11,7 +11,7 @@ from .core.config import settings
 from .core.database import engine, Base
 from .core.scheduler import usage_scheduler
 from .core.rate_limiter import rate_limit_middleware
-from .api.v1 import auth, users, projects, tasks, ai, payments, clients, invoices, milestones, work_logs, notifications, recurring_invoices, admin
+from .api.v1 import auth, users, projects, tasks, ai, payments, clients, invoices, milestones, work_logs, notifications, recurring_invoices, admin, upload
 
 # Create database tables
 @asynccontextmanager
@@ -39,6 +39,9 @@ app = FastAPI(
 
 # Add middleware
 app.middleware("http")(rate_limit_middleware)
+
+# Mount static files for uploads
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.add_middleware(
     CORSMiddleware,
@@ -69,6 +72,7 @@ app.include_router(recurring_invoices.router, prefix="/api/v1/recurring-invoices
 app.include_router(ai.router, prefix="/api/v1/ai", tags=["AI Tools"])
 app.include_router(payments.router, prefix="/api/v1/payments", tags=["Payments"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
+app.include_router(upload.router, prefix="/api/v1", tags=["File Upload"])
 
 # Health check endpoint
 @app.get("/health")

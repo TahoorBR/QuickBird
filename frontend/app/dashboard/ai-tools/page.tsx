@@ -342,17 +342,28 @@ export default function AIToolsPage() {
     }));
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setUploadedFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        // In real app, upload file to server
+      try {
+        setUploadedFile(file);
+        // Upload file to server
+        const response = await apiClient.uploadFile(file, 'project');
         toast.success('File uploaded successfully');
-      };
-      reader.readAsText(file);
+        
+        // Add to uploaded files list
+        const newFile: UploadedFile = {
+          id: Date.now(),
+          name: file.name,
+          type: file.type,
+          content: response.url,
+          uploaded_at: new Date().toISOString()
+        };
+        setUploadedFiles(prev => [...prev, newFile]);
+      } catch (error) {
+        console.error('File upload failed:', error);
+        toast.error('Failed to upload file');
+      }
     }
   };
 
