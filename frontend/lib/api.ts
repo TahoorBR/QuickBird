@@ -3,6 +3,12 @@ import Cookies from 'js-cookie'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
+// Debug logging
+if (typeof window !== 'undefined') {
+  console.log('API_BASE_URL:', API_BASE_URL)
+  console.log('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
+}
+
 // Types
 export interface User {
   id: number
@@ -251,10 +257,18 @@ class ApiClient {
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
-    const response: AxiosResponse<AuthResponse> = await this.client.post('/api/v1/auth/register', userData)
-    this.setToken(response.data.access_token)
-    localStorage.setItem('user', JSON.stringify(response.data.user))
-    return response.data
+    try {
+      console.log('Registering user with data:', userData)
+      console.log('Making request to:', this.client.defaults.baseURL + '/api/v1/auth/register')
+      const response: AxiosResponse<AuthResponse> = await this.client.post('/api/v1/auth/register', userData)
+      console.log('Registration successful:', response.data)
+      this.setToken(response.data.access_token)
+      localStorage.setItem('user', JSON.stringify(response.data.user))
+      return response.data
+    } catch (error) {
+      console.error('Registration error:', error)
+      throw error
+    }
   }
 
   async logout(): Promise<void> {
