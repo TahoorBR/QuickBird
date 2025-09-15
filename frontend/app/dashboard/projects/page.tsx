@@ -220,10 +220,11 @@ export default function ProjectsPage() {
 
   const handleCreateProject = async (projectData: Omit<Project, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      // Convert budget to cents if provided
+      // Convert budget to cents if provided and deadline to proper format
       const projectDataWithCents = {
         ...projectData,
-        budget: projectData.budget ? Math.round(projectData.budget * 100) : undefined
+        budget: projectData.budget ? Math.round(projectData.budget * 100) : undefined,
+        deadline: projectData.deadline ? new Date(projectData.deadline).toISOString() : undefined
       };
       
       const newProject = await apiClient.createProject(projectDataWithCents);
@@ -245,10 +246,11 @@ export default function ProjectsPage() {
     if (!editingProject) return;
     
     try {
-      // Convert budget to cents if provided
+      // Convert budget to cents if provided and deadline to proper format
       const projectDataWithCents = {
         ...projectData,
-        budget: projectData.budget ? Math.round(projectData.budget * 100) : undefined
+        budget: projectData.budget ? Math.round(projectData.budget * 100) : undefined,
+        deadline: projectData.deadline ? new Date(projectData.deadline).toISOString() : undefined
       };
       
       const updatedProject = await apiClient.updateProject(editingProject.id, projectDataWithCents);

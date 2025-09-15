@@ -263,6 +263,13 @@ export default function AIToolsPage() {
   const [showProfileDialog, setShowProfileDialog] = useState(false);
   const [showFileDialog, setShowFileDialog] = useState(false);
   
+  // Resume and Documents
+  const [resume, setResume] = useState<any>(null);
+  const [documents, setDocuments] = useState<any[]>([]);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [uploadingDocument, setUploadingDocument] = useState(false);
+  const [selectedDocumentType, setSelectedDocumentType] = useState('client_requirements');
+  
   // Form data
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -272,6 +279,8 @@ export default function AIToolsPage() {
     loadData();
     loadAIProfile();
     loadUploadedFiles();
+    loadResume();
+    loadDocuments();
   }, []);
 
   const loadData = async () => {
@@ -321,6 +330,24 @@ export default function AIToolsPage() {
     }
   };
 
+  const loadResume = async () => {
+    try {
+      const resumeData = await apiClient.getResume();
+      setResume(resumeData);
+    } catch (error) {
+      console.error('Failed to load resume:', error);
+    }
+  };
+
+  const loadDocuments = async () => {
+    try {
+      const documentsData = await apiClient.getDocuments();
+      setDocuments(documentsData.documents || []);
+    } catch (error) {
+      console.error('Failed to load documents:', error);
+    }
+  };
+
   const handleToolSelect = (tool: AITool) => {
     setSelectedTool(tool);
     setFormData({});
@@ -355,6 +382,40 @@ export default function AIToolsPage() {
       } catch (error) {
         console.error('File upload failed:', error);
         toast.error('Failed to upload file');
+      }
+    }
+  };
+
+  const handleResumeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      try {
+        setUploadingResume(true);
+        const response = await apiClient.uploadResume(file);
+        setResume(response);
+        toast.success('Resume uploaded successfully');
+      } catch (error) {
+        console.error('Resume upload failed:', error);
+        toast.error('Failed to upload resume');
+      } finally {
+        setUploadingResume(false);
+      }
+    }
+  };
+
+  const handleDocumentUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      try {
+        setUploadingDocument(true);
+        const response = await apiClient.uploadDocument(file, selectedDocumentType);
+        setDocuments(prev => [...prev, response]);
+        toast.success('Document uploaded successfully');
+      } catch (error) {
+        console.error('Document upload failed:', error);
+        toast.error('Failed to upload document');
+      } finally {
+        setUploadingDocument(false);
       }
     }
   };

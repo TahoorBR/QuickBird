@@ -546,6 +546,42 @@ class ApiClient {
     return response.data
   }
 
+  // Resume and Document Upload methods
+  async uploadResume(file: File): Promise<any> {
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    const response: AxiosResponse<any> = await this.client.post('/api/v1/upload/resume', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return response.data
+  }
+
+  async uploadDocument(file: File, documentType: string): Promise<any> {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('document_type', documentType)
+    
+    const response: AxiosResponse<any> = await this.client.post('/api/v1/upload/document', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return response.data
+  }
+
+  async getResume(): Promise<any> {
+    const response: AxiosResponse<any> = await this.client.get('/api/v1/upload/resume')
+    return response.data
+  }
+
+  async getDocuments(): Promise<any> {
+    const response: AxiosResponse<any> = await this.client.get('/api/v1/upload/documents')
+    return response.data
+  }
+
   async getUsageStats(): Promise<{ usage_count: number; usage_limit: number }> {
     const response: AxiosResponse<{ usage_count: number; usage_limit: number }> = await this.client.get('/api/v1/ai/usage')
     return response.data
