@@ -11,7 +11,7 @@ from .core.config import settings
 from .core.database import engine, Base
 from .core.scheduler import usage_scheduler
 from .core.rate_limiter import rate_limit_middleware
-from .api.v1 import auth, users, projects, tasks, ai, payments, clients, invoices, milestones, work_logs, notifications, recurring_invoices
+from .api.v1 import auth, users, projects, tasks, ai, payments, clients, invoices, milestones, work_logs, notifications, recurring_invoices, admin
 
 # Create database tables
 @asynccontextmanager
@@ -68,6 +68,7 @@ app.include_router(notifications.router, prefix="/api/v1/notifications", tags=["
 app.include_router(recurring_invoices.router, prefix="/api/v1/recurring-invoices", tags=["Recurring Invoices"])
 app.include_router(ai.router, prefix="/api/v1/ai", tags=["AI Tools"])
 app.include_router(payments.router, prefix="/api/v1/payments", tags=["Payments"])
+app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
 
 # Health check endpoint
 @app.get("/health")
