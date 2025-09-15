@@ -45,19 +45,13 @@ import {
 import { 
   PlayArrow,
   Stop,
-  Pause,
   Add,
-  Edit,
-  Delete,
   Schedule,
   Timer,
   Work,
   Assignment,
-  Person,
-  TrendingUp,
   AccessTime,
-  PlayCircleOutline,
-  StopCircleOutline
+  PlayCircleOutline
 } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
@@ -117,7 +111,7 @@ export default function TimeTrackingPage() {
     project_id: '',
     task_id: '',
     description: '',
-    is_billable: true
+    is_billable: 'true'
   });
 
   useEffect(() => {
@@ -186,7 +180,7 @@ export default function TimeTrackingPage() {
         parseInt(formData.project_id),
         formData.task_id ? parseInt(formData.task_id) : undefined,
         formData.description,
-        formData.is_billable
+        formData.is_billable === 'true'
       );
       
       setActiveTimer({
@@ -196,7 +190,7 @@ export default function TimeTrackingPage() {
         description: formData.description,
         start_time: response.start_time,
         hours_worked: 0,
-        is_billable: formData.is_billable,
+        is_billable: formData.is_billable === 'true',
         is_active: true
       });
       
@@ -211,7 +205,7 @@ export default function TimeTrackingPage() {
         project_id: '',
         task_id: '',
         description: '',
-        is_billable: true
+        is_billable: 'true'
       });
       
       toast.success('Timer started');
@@ -331,7 +325,7 @@ export default function TimeTrackingPage() {
                 variant="contained"
                 color="error"
                 size="large"
-                startIcon={<StopCircleOutline />}
+                startIcon={<Stop />}
                 onClick={stopTimer}
                 sx={{ minWidth: 120 }}
               >
@@ -398,11 +392,11 @@ export default function TimeTrackingPage() {
                     <InputLabel>Billable</InputLabel>
                     <Select
                       value={formData.is_billable}
-                      onChange={(e) => setFormData(prev => ({ ...prev, is_billable: e.target.value as boolean }))}
+                      onChange={(e) => setFormData(prev => ({ ...prev, is_billable: e.target.value }))}
                       label="Billable"
                     >
-                      <MenuItem value={true}>Yes</MenuItem>
-                      <MenuItem value={false}>No</MenuItem>
+                      <MenuItem value="true">Yes</MenuItem>
+                      <MenuItem value="false">No</MenuItem>
                     </Select>
                   </FormControl>
                   <Button
