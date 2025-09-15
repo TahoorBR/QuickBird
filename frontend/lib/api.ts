@@ -219,7 +219,7 @@ class ApiClient {
       (error) => {
         if (error.response?.status === 401) {
           this.clearAuth()
-          window.location.href = '/login'
+          window.location.href = '/auth/login'
         }
         return Promise.reject(error)
       }
