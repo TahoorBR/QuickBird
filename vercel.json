@@ -4,6 +4,7 @@
   "installCommand": "cd frontend && npm install",
   "framework": "nextjs",
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://quickbird.onrender.com"
+    "NEXT_PUBLIC_API_URL": "https://quickbird.onrender.com",
+    "NEXT_PUBLIC_APP_URL": "https://quickbird.vercel.app"
   }
 }
