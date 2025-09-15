@@ -667,12 +667,20 @@ const CreateProjectDialog = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate budget is not negative
+    const budgetValue = formData.budget ? parseFloat(formData.budget) : undefined;
+    if (budgetValue !== undefined && budgetValue < 0) {
+      toast.error('Budget cannot be negative');
+      return;
+    }
+    
     onSubmit({
       title: formData.title,
       description: formData.description,
       status: formData.status,
       client_name: formData.client_name || undefined,
-      budget: formData.budget ? parseFloat(formData.budget) : undefined,
+      budget: budgetValue,
       deadline: formData.deadline || undefined
     });
     setFormData({
@@ -727,12 +735,19 @@ const CreateProjectDialog = ({
           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
             <TextField
               margin="dense"
-              label="Budget"
+              label="Budget ($)"
               type="number"
               fullWidth
               variant="outlined"
               value={formData.budget}
-              onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value }))}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Only allow positive numbers or empty string
+                if (value === '' || (parseFloat(value) >= 0 && !isNaN(parseFloat(value)))) {
+                  setFormData(prev => ({ ...prev, budget: value }));
+                }
+              }}
+              inputProps={{ min: 0 }}
             />
             
             <TextField
@@ -804,11 +819,19 @@ const EditProjectDialog = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate budget is not negative
+    const budgetValue = formData.budget ? parseFloat(formData.budget) : undefined;
+    if (budgetValue !== undefined && budgetValue < 0) {
+      toast.error('Budget cannot be negative');
+      return;
+    }
+    
     onSubmit({
       title: formData.title,
       description: formData.description,
       status: formData.status as 'active' | 'completed' | 'paused',
-      budget: formData.budget ? parseFloat(formData.budget) : undefined,
+      budget: budgetValue,
       deadline: formData.deadline || undefined
     });
   };
@@ -856,12 +879,19 @@ const EditProjectDialog = ({
           
           <TextField
             margin="dense"
-            label="Budget"
+            label="Budget ($)"
             type="number"
             fullWidth
             variant="outlined"
             value={formData.budget}
-            onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Only allow positive numbers or empty string
+              if (value === '' || (parseFloat(value) >= 0 && !isNaN(parseFloat(value)))) {
+                setFormData({ ...formData, budget: value });
+              }
+            }}
+            inputProps={{ min: 0 }}
           />
           
           <TextField

@@ -582,6 +582,57 @@ class ApiClient {
     return response.data
   }
 
+  // Time Tracking methods
+  async getActiveTimer(): Promise<any> {
+    const response: AxiosResponse<any> = await this.client.get('/api/v1/time-tracking/timer/active')
+    return response.data
+  }
+
+  async startTimer(projectId: number, taskId?: number, description?: string, isBillable: boolean = true): Promise<any> {
+    const response: AxiosResponse<any> = await this.client.post('/api/v1/time-tracking/timer/start', {
+      project_id: projectId,
+      task_id: taskId,
+      description,
+      is_billable: isBillable
+    })
+    return response.data
+  }
+
+  async stopTimer(workLogId: number): Promise<any> {
+    const response: AxiosResponse<any> = await this.client.post('/api/v1/time-tracking/timer/stop', {
+      work_log_id: workLogId
+    })
+    return response.data
+  }
+
+  async getDailyTimeReport(date?: string): Promise<any> {
+    const params = date ? `?date=${date}` : ''
+    const response: AxiosResponse<any> = await this.client.get(`/api/v1/time-tracking/reports/daily${params}`)
+    return response.data
+  }
+
+  async getWeeklyTimeReport(weekStart?: string): Promise<any> {
+    const params = weekStart ? `?week_start=${weekStart}` : ''
+    const response: AxiosResponse<any> = await this.client.get(`/api/v1/time-tracking/reports/weekly${params}`)
+    return response.data
+  }
+
+  async getMonthlyTimeReport(year?: number, month?: number): Promise<any> {
+    let params = ''
+    if (year) params += `?year=${year}`
+    if (month) params += params ? `&month=${month}` : `?month=${month}`
+    const response: AxiosResponse<any> = await this.client.get(`/api/v1/time-tracking/reports/monthly${params}`)
+    return response.data
+  }
+
+  async getProjectTimeReport(projectId: number, startDate?: string, endDate?: string): Promise<any> {
+    let params = `?project_id=${projectId}`
+    if (startDate) params += `&start_date=${startDate}`
+    if (endDate) params += `&end_date=${endDate}`
+    const response: AxiosResponse<any> = await this.client.get(`/api/v1/time-tracking/reports/project/${projectId}${params}`)
+    return response.data
+  }
+
   async getUsageStats(): Promise<{ usage_count: number; usage_limit: number }> {
     const response: AxiosResponse<{ usage_count: number; usage_limit: number }> = await this.client.get('/api/v1/ai/usage')
     return response.data

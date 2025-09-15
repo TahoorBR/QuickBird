@@ -548,14 +548,21 @@ const CreateInvoiceDialog = ({
           
           <TextField
             margin="dense"
-            label="Amount"
+            label="Amount ($)"
             fullWidth
             variant="outlined"
             type="number"
             value={formData.amount}
-            onChange={(e) => setFormData(prev => ({ ...prev, amount: Number(e.target.value) }))}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              // Only allow positive numbers
+              if (value >= 0 && !isNaN(value)) {
+                setFormData(prev => ({ ...prev, amount: value }));
+              }
+            }}
             required
             sx={{ mb: 2 }}
+            inputProps={{ min: 0 }}
           />
           
           <TextField
@@ -565,8 +572,15 @@ const CreateInvoiceDialog = ({
             variant="outlined"
             type="number"
             value={formData.tax_rate}
-            onChange={(e) => setFormData(prev => ({ ...prev, tax_rate: Number(e.target.value) }))}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              // Only allow positive numbers between 0 and 100
+              if (value >= 0 && value <= 100 && !isNaN(value)) {
+                setFormData(prev => ({ ...prev, tax_rate: value }));
+              }
+            }}
             sx={{ mb: 2 }}
+            inputProps={{ min: 0, max: 100 }}
           />
           
           <TextField

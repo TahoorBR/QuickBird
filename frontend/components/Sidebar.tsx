@@ -10,7 +10,8 @@ import {
   Wrench, 
   User, 
   Settings,
-  LogOut 
+  LogOut,
+  Clock
 } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 
@@ -18,6 +19,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Projects', href: '/dashboard/projects', icon: Folder },
   { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
+  { name: 'Time Tracking', href: '/dashboard/time-tracking', icon: Clock },
   { name: 'Tools', href: '/dashboard/tools', icon: Wrench },
   { name: 'Users', href: '/dashboard/users', icon: User },
 ]
