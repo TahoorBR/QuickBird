@@ -25,7 +25,7 @@ class Settings(BaseSettings):
             self.SECRET_KEY = secrets.token_urlsafe(32)
     
     # CORS
-    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
+    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,https://quickbird.vercel.app,https://quickbird-git-main-muhammad-tahoors-projects.vercel.app"
     
     # AI Services
     OPENAI_API_KEY: Optional[str] = None
