@@ -87,10 +87,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const register = async (email: string, password: string, username: string, fullName?: string) => {
     try {
       setLoading(true)
+      console.log('AuthProvider: Starting registration...')
       const response = await apiClient.register({ email, password, username, full_name: fullName })
+      console.log('AuthProvider: Registration successful:', response)
       setUser(response.user)
       toast.success('Account created successfully!')
     } catch (error: any) {
+      console.error('AuthProvider: Registration error:', error)
+      console.error('Error response:', error.response)
+      console.error('Error message:', error.message)
+      
       let message = 'Registration failed'
       if (error.response?.data?.detail) {
         if (Array.isArray(error.response.data.detail)) {
@@ -100,7 +106,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         } else {
           message = error.response.data.detail
         }
+      } else if (error.message) {
+        message = error.message
+      } else if (error.code === 'NETWORK_ERROR') {
+        message = 'Network error - please check your connection'
+      } else if (error.code === 'ECONNREFUSED') {
+        message = 'Cannot connect to server - please try again later'
       }
+      
+      console.error('Final error message:', message)
       toast.error(message)
       throw new Error(message)
     } finally {

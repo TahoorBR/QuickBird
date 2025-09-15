@@ -32,6 +32,56 @@ export default function DebugPage() {
       >
         Test Backend Connection
       </button>
+
+      <h2>Test Admin Login</h2>
+      <button 
+        onClick={async () => {
+          try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: 'admin@quickbird.com',
+                password: 'admin123'
+              })
+            });
+            const data = await response.json();
+            alert(`Login Response: ${JSON.stringify(data)}`);
+          } catch (error) {
+            alert(`Login Error: ${error}`);
+          }
+        }}
+      >
+        Test Admin Login
+      </button>
+
+      <h2>Test Registration</h2>
+      <button 
+        onClick={async () => {
+          try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: 'test@example.com',
+                password: 'Test123456',
+                username: 'testuser',
+                full_name: 'Test User'
+              })
+            });
+            const data = await response.json();
+            alert(`Registration Response: ${JSON.stringify(data)}`);
+          } catch (error) {
+            alert(`Registration Error: ${error}`);
+          }
+        }}
+      >
+        Test Registration
+      </button>
     </div>
   );
 }
