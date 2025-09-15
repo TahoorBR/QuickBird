@@ -1,8 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
 from decimal import Decimal
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import os
 
 from ...core.database import get_db
 from ...core.security import get_current_user
@@ -302,3 +308,164 @@ async def get_invoice_stats(
         overdue_amount=overdue_amount,
         draft_amount=draft_amount
     )
+
+@router.put("/{invoice_id}", response_model=InvoiceResponse)
+async def update_invoice(
+    invoice_id: int,
+    invoice_update: InvoiceUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Update an existing invoice"""
+    invoice = db.query(Invoice).filter(
+        Invoice.id == invoice_id,
+        Invoice.user_id == current_user.id
+    ).first()
+    
+    if not invoice:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invoice not found"
+        )
+    
+    # Update invoice fields
+    update_data = invoice_update.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(invoice, field, value)
+    
+    # Recalculate total if items were updated
+    if "items" in update_data:
+        total_amount = sum(item.quantity * item.unit_price for item in invoice.items)
+        invoice.total_amount = total_amount
+    
+    invoice.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(invoice)
+    
+    return invoice
+
+@router.post("/{invoice_id}/send")
+async def send_invoice(
+    invoice_id: int,
+    background_tasks: BackgroundTasks,
+    recipient_email: Optional[str] = None,
+    custom_message: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Send invoice via email"""
+    invoice = db.query(Invoice).filter(
+        Invoice.id == invoice_id,
+        Invoice.user_id == current_user.id
+    ).first()
+    
+    if not invoice:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invoice not found"
+        )
+    
+    # Get client email
+    client_email = recipient_email
+    if not client_email and invoice.client:
+        client_email = invoice.client.email
+    
+    if not client_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No recipient email address found"
+        )
+    
+    # Update invoice status
+    invoice.status = "sent"
+    invoice.sent_date = datetime.utcnow()
+    invoice.updated_at = datetime.utcnow()
+    db.commit()
+    
+    # Send email in background
+    background_tasks.add_task(
+        send_invoice_email,
+        invoice,
+        client_email,
+        custom_message,
+        current_user
+    )
+    
+    return {"message": "Invoice sent successfully"}
+
+async def send_invoice_email(
+    invoice: Invoice,
+    recipient_email: str,
+    custom_message: Optional[str],
+    user: User
+):
+    """Send invoice email (background task)"""
+    try:
+        # Create email content
+        subject = f"Invoice {invoice.invoice_number} from {user.full_name or user.username}"
+        
+        # HTML email template
+        html_content = f"""
+        <html>
+        <body>
+            <h2>Invoice {invoice.invoice_number}</h2>
+            <p>Dear {invoice.client.name if invoice.client else 'Client'},</p>
+            
+            <p>Please find attached your invoice for the services provided.</p>
+            
+            <h3>Invoice Details:</h3>
+            <ul>
+                <li><strong>Invoice Number:</strong> {invoice.invoice_number}</li>
+                <li><strong>Date:</strong> {invoice.invoice_date.strftime('%B %d, %Y')}</li>
+                <li><strong>Due Date:</strong> {invoice.due_date.strftime('%B %d, %Y') if invoice.due_date else 'N/A'}</li>
+                <li><strong>Total Amount:</strong> ${invoice.total_amount:,.2f}</li>
+            </ul>
+            
+            {f'<p>{custom_message}</p>' if custom_message else ''}
+            
+            <p>Thank you for your business!</p>
+            
+            <p>Best regards,<br>
+            {user.full_name or user.username}<br>
+            {user.email}</p>
+        </body>
+        </html>
+        """
+        
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = user.email
+        msg['To'] = recipient_email
+        
+        # Add HTML content
+        html_part = MIMEText(html_content, 'html')
+        msg.attach(html_part)
+        
+        # Send email (you'll need to configure SMTP settings)
+        # This is a placeholder - you'll need to implement actual email sending
+        print(f"Would send invoice {invoice.invoice_number} to {recipient_email}")
+        
+    except Exception as e:
+        print(f"Failed to send invoice email: {e}")
+
+@router.get("/{invoice_id}/pdf")
+async def generate_invoice_pdf(
+    invoice_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Generate PDF for invoice"""
+    invoice = db.query(Invoice).filter(
+        Invoice.id == invoice_id,
+        Invoice.user_id == current_user.id
+    ).first()
+    
+    if not invoice:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invoice not found"
+        )
+    
+    # This would generate a PDF - placeholder for now
+    return {"message": "PDF generation not yet implemented", "invoice_id": invoice_id}

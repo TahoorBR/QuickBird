@@ -12,7 +12,7 @@ from .core.config import settings
 from .core.database import engine, Base
 from .core.scheduler import usage_scheduler
 from .core.rate_limiter import rate_limit_middleware
-from .api.v1 import auth, users, projects, tasks, ai, payments, clients, invoices, milestones, work_logs, notifications, recurring_invoices, admin, upload
+from .api.v1 import auth, users, projects, tasks, ai, payments, clients, invoices, milestones, work_logs, notifications, recurring_invoices, admin, upload, analytics, websocket, project_templates, time_tracking, client_portal
 
 # Create database tables
 @asynccontextmanager
@@ -80,6 +80,11 @@ app.include_router(ai.router, prefix="/api/v1/ai", tags=["AI Tools"])
 app.include_router(payments.router, prefix="/api/v1/payments", tags=["Payments"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
 app.include_router(upload.router, prefix="/api/v1", tags=["File Upload"])
+app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytics"])
+app.include_router(websocket.router, prefix="/api/v1", tags=["WebSocket"])
+app.include_router(project_templates.router, prefix="/api/v1/project-templates", tags=["Project Templates"])
+app.include_router(time_tracking.router, prefix="/api/v1/time-tracking", tags=["Time Tracking"])
+app.include_router(client_portal.router, prefix="/api/v1/client-portal", tags=["Client Portal"])
 
 # Health check endpoint
 @app.get("/health")

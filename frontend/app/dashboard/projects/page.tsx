@@ -157,7 +157,7 @@ const ProjectCard = ({ project, onEdit, onDelete, onAiGenerate, onViewMilestones
                 Budget
               </Typography>
               <Typography variant="h6" fontWeight="600">
-                ${project.budget.toLocaleString()}
+                ${(project.budget / 100).toLocaleString()}
               </Typography>
             </Box>
           </Box>
@@ -220,7 +220,13 @@ export default function ProjectsPage() {
 
   const handleCreateProject = async (projectData: Omit<Project, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      const newProject = await apiClient.createProject(projectData);
+      // Convert budget to cents if provided
+      const projectDataWithCents = {
+        ...projectData,
+        budget: projectData.budget ? Math.round(projectData.budget * 100) : undefined
+      };
+      
+      const newProject = await apiClient.createProject(projectDataWithCents);
       setProjects(prev => [...prev, newProject]);
       setShowCreateDialog(false);
       toast.success('Project created successfully');
@@ -239,7 +245,13 @@ export default function ProjectsPage() {
     if (!editingProject) return;
     
     try {
-      const updatedProject = await apiClient.updateProject(editingProject.id, projectData);
+      // Convert budget to cents if provided
+      const projectDataWithCents = {
+        ...projectData,
+        budget: projectData.budget ? Math.round(projectData.budget * 100) : undefined
+      };
+      
+      const updatedProject = await apiClient.updateProject(editingProject.id, projectDataWithCents);
       setProjects(prev => prev.map(p => p.id === editingProject.id ? updatedProject : p));
       setShowEditDialog(false);
       setEditingProject(null);
@@ -369,7 +381,7 @@ export default function ProjectsPage() {
     total: projects.length,
     inProgress: projects.filter(p => p.status === "active").length,
     completed: projects.filter(p => p.status === "completed").length,
-    totalBudget: projects.reduce((sum, p) => sum + (p.budget || 0), 0)
+    totalBudget: projects.reduce((sum, p) => sum + ((p.budget || 0) / 100), 0)
   };
 
   return (
@@ -772,7 +784,7 @@ const EditProjectDialog = ({
     title: project?.title || '',
     description: project?.description || '',
     status: project?.status || 'active',
-    budget: project?.budget?.toString() || '',
+    budget: project?.budget ? (project.budget / 100).toString() : '',
     deadline: project?.deadline || ''
   });
 
@@ -782,7 +794,7 @@ const EditProjectDialog = ({
         title: project.title,
         description: project.description || '',
         status: project.status,
-        budget: project.budget?.toString() || '',
+        budget: project.budget ? (project.budget / 100).toString() : '',
         deadline: project.deadline || ''
       });
     }

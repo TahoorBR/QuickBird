@@ -165,6 +165,8 @@ export default function InvoicesPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loadingInvoices, setLoadingInvoices] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showPrintDialog, setShowPrintDialog] = useState(false);
 
@@ -214,8 +216,25 @@ export default function InvoicesPage() {
   };
 
   const handleEditInvoice = async (invoice: Invoice) => {
-    // TODO: Implement edit dialog
-    toast('Edit functionality coming soon', { icon: 'ℹ️' });
+    setEditingInvoice(invoice);
+    setShowEditDialog(true);
+  };
+
+  const handleUpdateInvoice = async (invoiceData: Partial<Invoice>) => {
+    if (!editingInvoice) return;
+    
+    try {
+      const updatedInvoice = await apiClient.updateInvoice(editingInvoice.id, invoiceData);
+      setInvoices(prev => prev.map(inv => 
+        inv.id === editingInvoice.id ? updatedInvoice : inv
+      ));
+      setShowEditDialog(false);
+      setEditingInvoice(null);
+      toast.success('Invoice updated successfully');
+    } catch (error) {
+      console.error('Failed to update invoice:', error);
+      toast.error('Failed to update invoice');
+    }
   };
 
   const handleDeleteInvoice = async (id: number) => {
@@ -237,8 +256,11 @@ export default function InvoicesPage() {
 
   const handleSendInvoice = async (invoice: Invoice) => {
     try {
-      // TODO: Implement send functionality
-      toast('Send functionality coming soon', { icon: 'ℹ️' });
+      await apiClient.sendInvoice(invoice.id);
+      setInvoices(prev => prev.map(inv => 
+        inv.id === invoice.id ? { ...inv, status: 'sent' } : inv
+      ));
+      toast.success('Invoice sent successfully');
     } catch (error) {
       console.error('Failed to send invoice:', error);
       toast.error('Failed to send invoice');

@@ -517,6 +517,40 @@ class ApiClient {
     return response.data
   }
 
+  // Analytics methods
+  async getAnalytics(timeRange: string = '30'): Promise<any> {
+    const response: AxiosResponse<any> = await this.client.get(`/api/v1/analytics?time_range=${timeRange}`)
+    return response.data
+  }
+
+  async getRevenueTrend(days: number = 30): Promise<any> {
+    const response: AxiosResponse<any> = await this.client.get(`/api/v1/analytics/revenue-trend?days=${days}`)
+    return response.data
+  }
+
+  async getProjectPerformance(): Promise<any> {
+    const response: AxiosResponse<any> = await this.client.get('/api/v1/analytics/project-performance')
+    return response.data
+  }
+
+  // Enhanced Invoice methods
+  async updateInvoice(id: number, invoice: Partial<Invoice>): Promise<Invoice> {
+    const response: AxiosResponse<Invoice> = await this.client.put(`/api/v1/invoices/${id}`, invoice)
+    return response.data
+  }
+
+  async sendInvoice(id: number, recipientEmail?: string, customMessage?: string): Promise<void> {
+    await this.client.post(`/api/v1/invoices/${id}/send`, {
+      recipient_email: recipientEmail,
+      custom_message: customMessage
+    })
+  }
+
+  async generateInvoicePDF(id: number): Promise<any> {
+    const response: AxiosResponse<any> = await this.client.get(`/api/v1/invoices/${id}/pdf`)
+    return response.data
+  }
+
   async getUsageStats(): Promise<{ usage_count: number; usage_limit: number }> {
     const response: AxiosResponse<{ usage_count: number; usage_limit: number }> = await this.client.get('/api/v1/ai/usage')
     return response.data

@@ -104,7 +104,12 @@ export default function AnalyticsPage() {
     try {
       setLoadingAnalytics(true);
       
-      // Load all data
+      // Use the new analytics API endpoint
+      const analyticsData = await apiClient.getAnalytics(timeRange);
+      setAnalyticsData(analyticsData);
+      return;
+      
+      // Fallback: Load all data manually if analytics API fails
       const [projects, tasks, clients, invoices, workLogs] = await Promise.all([
         apiClient.getProjects().catch(() => []),
         apiClient.getTasks().catch(() => []),

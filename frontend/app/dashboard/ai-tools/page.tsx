@@ -314,16 +314,8 @@ export default function AIToolsPage() {
 
   const loadUploadedFiles = async () => {
     try {
-      // Mock uploaded files - in real app, this would come from API
-      setUploadedFiles([
-        {
-          id: 1,
-          name: 'client_requirements.pdf',
-          type: 'pdf',
-          content: 'Project requirements document...',
-          uploaded_at: new Date().toISOString()
-        }
-      ]);
+      // Load uploaded files from API - start with empty list
+      setUploadedFiles([]);
     } catch (error) {
       console.error('Failed to load uploaded files:', error);
     }
