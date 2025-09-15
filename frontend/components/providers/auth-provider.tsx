@@ -24,14 +24,20 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    initializeAuth()
+    setMounted(true)
   }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+    initializeAuth()
+  }, [mounted])
 
   const initializeAuth = async () => {
     try {
-      if (apiClient.isAuthenticated()) {
+      if (typeof window !== 'undefined' && apiClient.isAuthenticated()) {
         const storedUser = apiClient.getCurrentUserFromStorage()
         if (storedUser) {
           setUser(storedUser)

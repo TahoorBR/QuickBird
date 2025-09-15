@@ -12,11 +12,11 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   },
   images: {
-    domains: ['localhost', '127.0.0.1', 'quickbird-backend.onrender.com'],
+    domains: ['localhost', '127.0.0.1', 'quickbird.onrender.com'],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'quickbird-backend.onrender.com',
+        hostname: 'quickbird.onrender.com',
         port: '',
         pathname: '/**',
       },
